@@ -61,10 +61,10 @@ const ProductDetails: React.FC = () => {
     additionalImages: [
       "/product/shoetopia-green.webp",
       "/product/tokyo-talkies-tan.webp",
-      "/product/sandal.webp",
-      "/product/black-sandal.webp",
-      "/product/slipper.webp",
-      "/product/tokyo-talkies-tan.webp",
+      "/product/strawberry-rabbit.webp",
+      "/product/window-curtain.webp",
+      "/product/budhhamonk.webp",
+      "/jewellry/braclet.webp",
     ],
   };
 
