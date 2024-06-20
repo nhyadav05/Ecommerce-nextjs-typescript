@@ -24,7 +24,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
   return (
     <div className="relative">
       <input
-        className="w-full py-2 px-4 rounded-md bg-white hover:bg-gray-200 focus:outline-none"
+        className="w-full py-2 px-4 rounded-md bg-white text-black hover:bg-gray-200 focus:outline-none"
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}

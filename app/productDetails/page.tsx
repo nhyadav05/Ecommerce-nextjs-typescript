@@ -2,37 +2,35 @@
 
 import React, { useState } from "react";
 interface Product {
-  id: number,
-  name: string,
-  category: string,
-  title: string,
-  imageSrc: string,
-  description: string,
-  price: number,
-  discountPrice: number,
-  offer: string,
-  ratings: number,
-  reviews: number,
-  availableOffers: string[ ],
+  id: number;
+  name: string;
+  category: string;
+  title: string;
+  imageSrc: string;
+  description: string;
+  price: number;
+  discountPrice: number;
+  offer: string;
+  ratings: number;
+  reviews: number;
+  availableOffers: string[];
   additionalImages: string[]; // Example: array of additional image URLs
 }
 
-
-const ProductDetails: React.FC= () => {
+const ProductDetails: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  const availableSizes = ['4', '5', '6', '7', '8', '9', '10', '11']; // Example of available sizes
+  const availableSizes = ["4", "5", "6", "7", "8", "9", "10", "11"]; // Example of available sizes
 
-  const handleColorChange = (colorValue:any) => {
+  const handleColorChange = (colorValue: any) => {
     setSelectedColor(colorValue);
-    console.log(colorValue,"colorValue")
+    console.log(colorValue, "colorValue");
   };
-  
-  const handleSizeChange = (sizeValue:any) => {
+
+  const handleSizeChange = (sizeValue: any) => {
     setSelectedSize(sizeValue);
-    console.log(sizeValue,"sizeValue")
+    console.log(sizeValue, "sizeValue");
   };
-  
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -40,7 +38,7 @@ const ProductDetails: React.FC= () => {
     setSelectedImageIndex(index);
   };
 
-  const product :Product = {
+  const product: Product = {
     id: 2,
     name: "Women's Sandal",
     category: "Footwear",
@@ -76,25 +74,25 @@ const ProductDetails: React.FC= () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {/* Product Image Section */}
         <div>
-    {/* Main Product Image */}
-    <img
-      src={product.additionalImages[selectedImageIndex]}
-      alt={product.name}
-      className="w-full object-contain rounded-lg shadow-md mb-4"
-    />
-    {/* Additional Images */}
-    <div className="flex  mb-4 gap-2 overflow-x-auto">
-      {product.additionalImages.map((imgSrc, index) => (
-        <img
-          key={index}
-          src={imgSrc}
-          alt={`Product ${index + 1}`}
-          className="w-[30%] md:w-[20%]  object-cover shadow-md cursor-pointer"
-          onClick={() => handleImageClick(index)}
-        />
-      ))}
-    </div>
-  </div>
+          {/* Main Product Image */}
+          <img
+            src={product.additionalImages[selectedImageIndex]}
+            alt={product.name}
+            className="w-full object-contain rounded-lg shadow-md mb-4"
+          />
+          {/* Additional Images */}
+          <div className="flex  mb-4 gap-2 overflow-x-auto">
+            {product.additionalImages.map((imgSrc, index) => (
+              <img
+                key={index}
+                src={imgSrc}
+                alt={`Product ${index + 1}`}
+                className="w-[30%] md:w-[20%]  object-cover shadow-md cursor-pointer"
+                onClick={() => handleImageClick(index)}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* Product Details Section */}
         <div className="md:p-8">
@@ -136,116 +134,119 @@ const ProductDetails: React.FC= () => {
           </div>
 
           <div className="mt-10">
-       {/* Color Selection */}
-       <div>
-        <h2 className="text-md font-semibold text-gray-900">Color</h2>
-        <fieldset aria-label="Choose a color" className="mt-4">
-          <div className="flex items-center space-x-3">
-            {[
-              { label: 'White', value: 'White', bgColor: 'bg-white' },
-              { label: 'Gray', value: 'Gray', bgColor: 'bg-gray-200' },
-              { label: 'Black', value: 'Black', bgColor: 'bg-gray-900' }
-            ].map((color, index) => (
-              <label
-                key={index}
-                aria-label={color.label}
-                className={`relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 ring-gray-400 focus:outline-none w-[60px] h-[70px] ${
-                  selectedColor === color.value ? 'ring-1 ring-indigo-500' : ''
-                }`}
-                onClick={() => handleColorChange(color.value)}
-              >
-                <input
-                  type="radio"
-                  name="color-choice"
-                  value={color.value}
-                  className="sr-only"
-                />
-                <span
-                  aria-hidden="true"
-                  className={`h-8 w-8 rounded-full border border-black border-opacity-10 ${color.bgColor}`}
-                ></span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      </div>
-
-      {/* Size Selection */}
-      <div className="mt-10">
-        <div className="flex items-center justify-between">
-          <h2 className="text-md font-semibold text-gray-900">
-            Size - UK/India
-          </h2>
-          <span className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            Size guide
-          </span>
-        </div>
-
-        <fieldset aria-label="Choose a size" className="mt-4">
-          <div className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-8">
-            {['4', '5', '6', '7', '8', '9', '10', '11'].map((size, index) => (
-              availableSizes.includes(size) ? (
-                <label
-                  key={index}
-                  className={`group relative flex cursor-pointer items-center justify-center rounded-md border bg-white px-4 py-3 text-sm font-medium uppercase text-gray-900 shadow-sm hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6 w-16 h-14 ${
-                    selectedSize === size ? 'border-indigo-500' : ''
-                  }`}
-                  onClick={() => handleSizeChange(size)}
-                >
-                  <input
-                    type="radio"
-                    name="size-choice"
-                    value={size}
-                    className="sr-only"
-                  />
-                  <span>{size}</span>
-                  <span
-                    className="pointer-events-none absolute -inset-px rounded-md"
-                    aria-hidden="true"
-                  ></span>
-                </label>
-              ) : (
-                <label
-                  key={index}
-                  className="group relative flex cursor-not-allowed items-center justify-center rounded-md border bg-gray-50 px-4 py-3 text-sm font-medium uppercase text-gray-200 hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6"
-                >
-                  <input
-                    type="radio"
-                    name="size-choice"
-                    value={size}
-                    disabled
-                    className="sr-only"
-                  />
-                  <span>{size}</span>
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200"
-                  >
-                    <svg
-                      className="absolute inset-0 h-full w-full stroke-2 text-gray-200"
-                      viewBox="0 0 100 100"
-                      preserveAspectRatio="none"
-                      stroke="currentColor"
+            {/* Color Selection */}
+            <div>
+              <h2 className="text-md font-semibold text-gray-900">Color</h2>
+              <fieldset aria-label="Choose a color" className="mt-4">
+                <div className="flex items-center space-x-3">
+                  {[
+                    { label: "White", value: "White", bgColor: "bg-white" },
+                    { label: "Gray", value: "Gray", bgColor: "bg-gray-200" },
+                    { label: "Black", value: "Black", bgColor: "bg-gray-900" },
+                  ].map((color, index) => (
+                    <label
+                      key={index}
+                      aria-label={color.label}
+                      className={`relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 border-gray-400 focus:outline-none w-[60px] h-[70px] ${
+                        selectedColor === color.value
+                          ? "  rounded-full w-[60px] h-[60px]  border border-blue-700"
+                          : ""
+                      }`}
+                      onClick={() => handleColorChange(color.value)}
                     >
-                      <line
-                        x1="0"
-                        y1="100"
-                        x2="100"
-                        y2="0"
-                        vectorEffect="non-scaling-stroke"
+                      <input
+                        type="radio"
+                        name="color-choice"
+                        value={color.value}
+                        className="sr-only"
                       />
-                    </svg>
-                  </span>
-                </label>
-              )
-            ))}
-          </div>
-        </fieldset>
-      </div>
+                      <span
+                        aria-hidden="true"
+                        className={`h-8 w-8 rounded-full border border-black border-opacity-10 ${color.bgColor}`}
+                      ></span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
+
+            {/* Size Selection */}
+            <div className="mt-10">
+              <div className="flex items-center justify-between">
+                <h2 className="text-md font-semibold text-gray-900">
+                  Size - UK/India
+                </h2>
+                <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                  Size guide
+                </span>
+              </div>
+
+              <fieldset aria-label="Choose a size" className="mt-4">
+                <div className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-8">
+                  {["4", "5", "6", "7", "8", "9", "10", "11"].map(
+                    (size, index) =>
+                      availableSizes.includes(size) ? (
+                        <label
+                          key={index}
+                          className={`group relative flex cursor-pointer items-center justify-center rounded-md border bg-white px-4 py-3 text-sm font-medium uppercase text-gray-900 shadow-sm hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6 w-16 h-14 ${
+                            selectedSize === size ? "border-blue-500" : ""
+                          }`}
+                          onClick={() => handleSizeChange(size)}
+                        >
+                          <input
+                            type="radio"
+                            name="size-choice"
+                            value={size}
+                            className="sr-only"
+                          />
+                          <span>{size}</span>
+                          <span
+                            className="pointer-events-none absolute -inset-px rounded-md"
+                            aria-hidden="true"
+                          ></span>
+                        </label>
+                      ) : (
+                        <label
+                          key={index}
+                          className="group relative flex cursor-not-allowed items-center justify-center rounded-md border bg-gray-50 px-4 py-3 text-sm font-medium uppercase text-gray-200 hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6"
+                        >
+                          <input
+                            type="radio"
+                            name="size-choice"
+                            value={size}
+                            disabled
+                            className="sr-only"
+                          />
+                          <span>{size}</span>
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200"
+                          >
+                            <svg
+                              className="absolute inset-0 h-full w-full stroke-2 text-gray-200"
+                              viewBox="0 0 100 100"
+                              preserveAspectRatio="none"
+                              stroke="currentColor"
+                            >
+                              <line
+                                x1="0"
+                                y1="100"
+                                x2="100"
+                                y2="0"
+                                vectorEffect="non-scaling-stroke"
+                              />
+                            </svg>
+                          </span>
+                        </label>
+                      )
+                  )}
+                </div>
+              </fieldset>
+            </div>
 
             <button
               type="submit"
-              className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Add to bag
             </button>
