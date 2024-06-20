@@ -18,4 +18,3 @@ const Banner: React.FC = () => {
 };
 
 export default Banner;
-

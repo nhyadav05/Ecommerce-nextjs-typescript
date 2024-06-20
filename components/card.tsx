@@ -1,5 +1,5 @@
+// component/card.tsx
 "use client";
-// components/Card.tsx
 
 import { HeartIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -83,4 +83,3 @@ const Card: React.FC<CardProps> = ({
 };
 
 export default Card;
-

@@ -1,4 +1,3 @@
-
 import MobileTab from "./Product/mobileTab";
 import AllProduct from "./Product/allProduct";
 import JewellryPage from "./Product/jewellry";
