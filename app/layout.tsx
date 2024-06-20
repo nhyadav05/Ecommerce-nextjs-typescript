@@ -6,6 +6,7 @@ import  Login  from "./login/page";
 import Navbar from "./navbar/Navbar";
 import Categories from "./categories/categories";
 import CartPage from "./cart/page";
+import Banner from "./banner/page";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -30,7 +31,9 @@ export default function RootLayout({
           <div>
             <Navbar />
             <Categories/>
+            <Banner/>
             {children}
+     
           </div>
         )}
       </body>

@@ -1,25 +1,20 @@
 "use client";
 
+// Navbar.tsx
 import React, { useState } from "react";
-import { BsSearch } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
-import Link from "next/link";
 import { PiTruck } from "react-icons/pi";
+import Link from "next/link";
+import SearchInput from "@/components/searchInput";
+
 
 const Navbar: React.FC = () => {
-  const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSearch = () => {
-    console.log("Searching for:", search);
-    setSearch("");
-  };
-
-  const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+  const handleSearch = (searchTerm: string) => {
+    console.log("Searching for:", searchTerm);
+    // Implement your search logic here
   };
 
   return (
@@ -36,22 +31,8 @@ const Navbar: React.FC = () => {
             </h1>
           </Link>
         </div>
-        <div className=" w-[30%] relative">
-          <input
-            className="w-full justify-center py-2 px-4 rounded-md bg-white hover:bg-gray-200 focus:outline-none"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onFocus={() => setIsOpen(true)}
-            onBlur={() => setIsOpen(false)}
-            placeholder="Search for products"
-            onKeyDown={handleEnter}
-          />
-
-          <BsSearch
-            className="text-black absolute right-4 top-3 "
-            onClick={handleSearch}
-          />
+        <div className="w-[30%]">
+          <SearchInput onSearch={handleSearch} />
         </div>
 
         {/* Icons */}
@@ -90,12 +71,9 @@ const Navbar: React.FC = () => {
         {/* Icons */}
         <div className="flex items-center space-x-6">
           <FaUserCircle className="text-white text-2xl cursor-pointer" />
-          {/* <FiShoppingCart className="text-white text-2xl cursor-pointer" /> */}
           <div className="relative">
-            {/* Shopping Cart Icon */}
             <Link href="/cart ">
               <FiShoppingCart className="text-white text-2xl cursor-pointer" />
-              {/* Badge with Number */}
               <button className="absolute top-[-0.75rem] right-[-0.75rem] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
                 <span className="text-xs font-bold text-white">0</span>
               </button>
@@ -106,24 +84,11 @@ const Navbar: React.FC = () => {
 
       {/* Common Search Input for Mobile and Desktop */}
       <div className="mt-3 md:hidden">
-        <div className="relative">
-          <input
-            className="w-full py-2 px-4 rounded-md bg-white hover:bg-gray-200 focus:outline-none border border-black"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search for products"
-            onKeyDown={handleEnter}
-          />
-
-          <BsSearch
-            className="text-black absolute right-4 top-3 "
-            onClick={handleSearch}
-          />
-        </div>
+        <SearchInput onSearch={handleSearch} />
       </div>
     </nav>
   );
 };
 
 export default Navbar;
+
