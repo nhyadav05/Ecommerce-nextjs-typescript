@@ -2,11 +2,12 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { usePathname } from "next/navigation";
-import  Login  from "./login/page";
+import Login from "./login/page";
 import Navbar from "./navbar/Navbar";
 import Categories from "./categories/categories";
 import CartPage from "./cart/page";
 import Banner from "./banner/page";
+import ProductDetails from "./productDetails/page";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -22,18 +23,23 @@ export default function RootLayout({
           <div>
             <Login />
           </div>
-        ) :   pathname === "/cart"? (
-          <div>
-                 <Navbar />
-            <CartPage/>
-          </div>
-        ):(
+        ) : pathname === "/cart" ? (
           <div>
             <Navbar />
-            <Categories/>
-            <Banner/>
+            <CartPage />
+          </div>
+        ) : pathname === "/productDetails" ? (
+          <div>
+  <Navbar />
+  <Categories />
+<ProductDetails/>
+          </div>
+        ) : (
+          <div>
+            <Navbar />
+            <Categories />
+            <Banner />
             {children}
-     
           </div>
         )}
       </body>

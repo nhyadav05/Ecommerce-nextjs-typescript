@@ -33,42 +33,47 @@ const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <div className="bg-white shadow-lg overflow-hidden relative rounded-lg transition-transform duration-300 transform hover:scale-105">
+    <div className="bg-white shadow-lg overflow-hidden relative ">
       <div className="relative">
-        <img
-          src={imageSrc}
-          alt={name}
-          className="w-full h-64 object-cover object-center"
-        />
-        <button
-          className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-          onClick={toggleTooltip}
-        >
-          <HeartIcon className="h-6 w-6 text-gray-600" />
-        </button>
+        <Link href="/productDetails">
+          <img
+            src={imageSrc}
+            alt={name}
+            className="w-full h-64 object-cover object-center transition-transform duration-300 transform hover:scale-105"
+          />
+          <button
+            className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
+            onClick={toggleTooltip}
+          >
+            <HeartIcon className="h-6 w-6 text-gray-600" />
+          </button>
+        </Link>
       </div>
 
       <div className="p-4">
         <Link href="/productDetails">
           <h2 className="text-md font-semibold mb-2">
-            <a
-              href={`/product/${name}`}
+            <Link
+              href="/productDetails"
               className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis"
             >
               {title || name}
-            </a>
+            </Link>
           </h2>
         </Link>
-        <p className="text-gray-700 mb-2 text-sm">{category}</p>
-        {description && (
-          <p className="text-sm text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis">
-            {description}
-          </p>
-        )}
-
+        <Link href="/productDetails">
+          <p className="text-gray-700 mb-2 text-sm">{category}</p>
+          {description && (
+            <p className="text-sm text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis">
+              {description}
+            </p>
+          )}
+        </Link>
         <div className="flex gap-2 items-center mt-4">
           <div className="text-gray-900 font-bold text-lg">₹{price}</div>
-          <del className="text-gray-400 font-bold text-sm">₹{discountPrice}</del>
+          <del className="text-gray-400 font-bold text-sm">
+            ₹{discountPrice}
+          </del>
           {offer && (
             <div className="text-sm font-bold text-[#22c722]">{offer}</div>
           )}
@@ -83,4 +88,3 @@ const Card: React.FC<CardProps> = ({
 };
 
 export default Card;
-

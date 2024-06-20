@@ -67,8 +67,7 @@ const CartPage: React.FC = () => {
               </span>
               <div className="text-md font-bold text-[#878787]">
                 <p className="whitespace-normal md:whitespace-nowrap">
-                  Safe and Secure Payments. Easy returns. 100% Authentic
-                  products.
+                  Safe and Secure Payments. Easy returns. 
                 </p>
               </div>
             </div>

@@ -11,7 +11,7 @@ const images = [
 
 const Banner: React.FC = () => {
   return (
-    <div className="px-4 py-4 md:py-3 mt-4 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+    <div className=" container px-4 py-4 md:py-3 mt-4 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto w-[95%]">
       <BannerSlider images={images} />
     </div>
   );

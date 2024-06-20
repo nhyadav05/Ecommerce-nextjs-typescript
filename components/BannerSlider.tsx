@@ -44,7 +44,7 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ images }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative s">
       <Slider {...settings}>
         {images.map((image, index) => (
           <div key={index}>

@@ -1,7 +1,7 @@
 // components/CartItem.tsx
 "use client";
 import React, { useState } from "react";
-import { FaRegHeart, FaHeart, FaTrashAlt } from 'react-icons/fa';
+import { FaRegHeart, FaHeart, FaTrashAlt } from "react-icons/fa";
 interface CartItemProps {
   imageUrl: string;
   title: string;
@@ -31,7 +31,7 @@ const CartItem: React.FC<CartItemProps> = ({
 
   const handleRemoveClick = () => {
     // Logic for removing the item (e.g., calling an API or updating state)
-    console.log('Item removed');
+    console.log("Item removed");
   };
   const [count, setCount] = useState(1);
 
@@ -175,28 +175,28 @@ const CartItem: React.FC<CartItemProps> = ({
             +
           </button>
         </div>
-        <div className="text-sm flex gap-2">
-      <button
-        className="text-gray-600 hover:text-blue-600 flex items-center"
-        onClick={handleSaveToggle}
-      >
-        {isSaved ? (
-          <FaHeart className="mr-1 text-red-600" />
-        ) : (
-          <FaRegHeart className="mr-1" />
-        )}
-        <span className="text-sm font-semibold">
-          {isSaved ? 'Saved' : 'Save for later'}
-        </span>
-      </button>
-      <button
-        className="text-gray-600 hover:text-blue-600 flex items-center ml-2"
-        onClick={handleRemoveClick}
-      >
-        <FaTrashAlt className="mr-1" />
-        <span className="text-sm font-semibold">Remove</span>
-      </button>
-    </div>
+        <div className="text-sm flex sm:flex-col  md:flex-col lg:flex-row md:items-center md:justify-end gap-2">
+          {/* <button
+            className="text-gray-600 hover:text-blue-600 flex items-center mb-2 md:mb-0 md:mr-2"
+            onClick={handleSaveToggle}
+          >
+            {isSaved ? (
+              <FaHeart className="mr-1 text-red-600" />
+            ) : (
+              <FaRegHeart className="mr-1" />
+            )}
+            <span className="text-sm font-semibold">
+              {isSaved ? "Saved" : "Save for later"}
+            </span>
+          </button> */}
+          <button
+            className="text-gray-600 hover:text-blue-600 flex items-center ml-2"
+            onClick={handleRemoveClick}
+          >
+            <FaTrashAlt className="mr-1" />
+            <span className="text-sm font-semibold">Remove</span>
+          </button>
+        </div>
       </div>
     </div>
   );
