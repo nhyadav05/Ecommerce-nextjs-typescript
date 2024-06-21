@@ -4,6 +4,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { PiTruck } from "react-icons/pi";
 import Link from "next/link";
+import Image from "next/image";
 import SearchInput from "@/components/searchInput";
 
 const Navbar: React.FC = () => {
@@ -20,9 +21,16 @@ const Navbar: React.FC = () => {
         <div className="flex items-center">
           <Link href="/">
             <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" />
+
+            {/* <Image
+        src="/Flipkart-Logo.png" // Note: Path is relative to the `public` directory
+        alt="flipkart"
+        width={90} // Adjust width and height as needed
+        height={90}
+      /> */}
           </Link>
           <Link href="/">
-            <h1 className="text-white text-xl font-semibold ml-2 cursor-pointer">
+            <h1 className="text-white text-sm sm:text-xl  md:text-2xl lg:text-3xl  font-semibold ml-2 cursor-pointer">
               Apna Store
             </h1>
           </Link>
@@ -60,7 +68,7 @@ const Navbar: React.FC = () => {
             <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" />
           </Link>
           <Link href="/">
-            <h1 className="text-white text-xl font-semibold ml-2 cursor-pointer">
+            <h1 className="text-white text-sm sm:text-xl  md:text-2xl lg:text-3xl font-semibold ml-2 cursor-pointer">
               Apna Store
             </h1>
           </Link>

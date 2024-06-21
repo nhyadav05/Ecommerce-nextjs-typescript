@@ -1,4 +1,3 @@
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,26 +57,37 @@ const Categories: React.FC = () => {
                   objectFit="cover"
                 />
               </div>
-              <span className="ml-2 text-black">{category.title}</span>
+              <span className="ml-2 text-black md:text-sm">
+                {category.title}
+              </span>
             </Link>
           </div>
         ))}
       </div>
 
       {/* Mobile View */}
-      <div className="md:hidden flex flex-wrap justify-between items-center mt-4">
+
+      <div className="md:hidden justify-between flex overflow-x-auto  items-center mt-4 scrollbar-hide">
         {categories.map((category, index) => (
-          <div key={index} className="flex items-center w-1/2 mb-4">
-            <Link href={`/categories/${category.slug}`}>
-              <div className="w-12 h-12 relative">
-                <Image
-                  src={category.image}
-                  alt={category.alt}
-                  layout="fill"
-                  objectFit="cover"
-                />
+          <div
+            key={index}
+            className="flex-shrink-0 flex flex-col items-center mr-4"
+          >
+            <Link href={`/categories/${category.slug}`} passHref>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 relative overflow-hidden rounded-full">
+                  <Image
+                    src={category.image}
+                    alt={category.alt}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-full"
+                  />
+                </div>
+                <span className="mt-1 text-black text-center text-xs ">
+                  {category.title}
+                </span>
               </div>
-              <span className="ml-2 text-black">{category.title}</span>
             </Link>
           </div>
         ))}
