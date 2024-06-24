@@ -221,7 +221,7 @@ const CartPage: React.FC = () => {
                     className="text-center"
                   />
                 </span>
-                <div className="text-md font-bold text-[#878787] sm:text-sm  md:text-xl lg:text-2xl">
+                <div className="text-md font-bold text-[#878787] sm:text-xs  md:text-sm lg:text-md">
                   <p className="whitespace-normal">
                     Safe and Secure Payments. Easy returns.
                   </p>

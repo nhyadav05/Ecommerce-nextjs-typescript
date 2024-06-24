@@ -71,7 +71,7 @@ const ProductDetails: React.FC = () => {
   return (
     <div className="px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
     <div className="text-center md:text-left">
-      <h1 className="text-sm sm:text-xl  md:text-2xl lg:text-3xl  font-bold mb-4">Product Details</h1>
+      <h1 className="text-md sm:text-md  md:text-xl lg:text-2xl  font-bold mb-4">Product Details</h1>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       {/* Product Image Section */}
@@ -99,8 +99,8 @@ const ProductDetails: React.FC = () => {
       {/* Product Details Section */}
       <div className="md:p-8">
         <i className="fa-solid fa-share"></i>
-        <h2 className="text-xl sm:text-xl  md:text-2xl lg:text-3xl  font-bold mb-4">{product.title}</h2>
-        <p className="text-gray-700 text-xl  sm:text-xs  md:text-xl lg:text-3x  mb-2">{product.description}</p>
+        <h2 className="text-xl sm:text-md  md:text-xl lg:text-2xl  font-bold mb-4">{product.title}</h2>
+        <p className="text-gray-700 text-xl  sm:text-sm md:text-md lg:text-xl  mb-2">{product.description}</p>
         <p className="text-green-600 font-semibold mb-4">{product.offer}</p>
         <p className="text-gray-800 font-semibold mb-4">
           Special Price: ₹{product.price}
@@ -123,13 +123,13 @@ const ProductDetails: React.FC = () => {
         {/* Available Offers */}
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Available Offers</h3>
-          <ul className="list-disc list-inside text-gray-600">
+          <ul className="list-disc list-inside text-gray-600 ">
             {product.availableOffers.map((offer, index) => (
               <li key={index}>
-                <span className="font-bold text-black-500 text-[0.875rem]">
+                <span className="font-bold text-black-500 text-md ">
                   Bank Offer{" "}
                 </span>{" "}
-                <span className="text-[0.785rem]">{offer}</span>
+                <span className="text-md ">{offer}</span>
               </li>
             ))}
           </ul>

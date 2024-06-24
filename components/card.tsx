@@ -52,19 +52,19 @@ const Card: React.FC<CardProps> = ({
 
       <div className="p-4">
         <Link href="/productDetails">
-          <h2 className="text-md font-semibold mb-2">
+          <h2 className="text-xl font-semibold mb-2">
             <Link
               href="/productDetails"
-              className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis"
+              className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden  text-ellipsis"
             >
               {title || name}
             </Link>
           </h2>
         </Link>
         <Link href="/productDetails">
-          <p className="text-gray-700 mb-2 text-sm">{category}</p>
+          <p className="text-gray-700 mb-2 text-md">{category}</p>
           {description && (
-            <p className="text-sm text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis">
+            <p className="text-md text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis">
               {description}
             </p>
           )}

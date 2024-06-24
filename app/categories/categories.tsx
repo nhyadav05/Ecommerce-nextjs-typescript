@@ -4,48 +4,66 @@ import Link from "next/link";
 
 const categories = [
   {
-    title: "Top Offer",
-    image: "/category/offer1.png",
-    alt: "Top Offer",
-    slug: "top-offer",
+    title: "Grocery",
+    image: "/category/Grocery.png",
+    alt: "Grocery",
+    slug: "grocery-supermart-store",
   },
   {
-    title: "Mobiles & Tablets",
-    image: "/category/mobile1.png",
-    alt: "Mobiles & Tablets",
-    slug: "mobilesTablets",
-  },
-  {
-    title: "TVs & Appliances",
-    image: "/category/TVs&Appliances1.png",
-    alt: "TVs & Appliances",
-    slug: "tvs-appliances",
-  },
-  {
-    title: "Home & Kitchen",
-    image: "/category/Home1.png",
-    alt: "Home & Kitchen",
-    slug: "home-kitchen",
-  },
-  {
-    title: "Beauty",
-    image: "/category/beauty1.png",
-    alt: "Beauty",
-    slug: "beauty",
+    title: "Mobiles",
+    image: "/category/phone.png",
+    alt: "Mobiles",
+    slug: "mobile-phones-store",
   },
   {
     title: "Fashion",
-    image: "/category/fashion1.png",
+    image: "/category/fashion.png",
     alt: "Fashion",
     slug: "fashion",
+  },
+  {
+    title: "Electronics",
+    image: "/category/Electronics.png",
+    alt: "Electronics",
+    slug: "electronics",
+  },
+  {
+    title: "Home & Furniture",
+    image: "/category/Furniture.png",
+    alt: "Home & Furniture",
+    slug: "home-furniture",
+  },
+  {
+    title: "Appliances",
+    image: "/category/TVs&Appliances.png",
+    alt: "Appliances",
+    slug: "tvs-and-appliances-new-clp-store",
+  },
+  {
+    title: "Travel",
+    image: "/category/travels.png",
+    alt: "Travel",
+    slug: "travel/flights",
+  },
+  {
+    title: "Beauty, Toys & More",
+    image: "/category/toy.png",
+    alt: "Beauty, Toys & More",
+    slug: "beauty-toys-more",
+  },
+  {
+    title: "Two Wheelers",
+    image: "/category/two-wheeler.png",
+    alt: "Two Wheelers",
+    slug: "two-wheelers",
   },
 ];
 
 const Categories: React.FC = () => {
   return (
-    <div className="bg-gray-100 px-4 py-2 md:py-3 mt-2 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+    <div className="bg-gray-50 px-4 py-2 md:py-3 mt-2 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto ">
       {/* Desktop View */}
-      <div className="hidden md:flex items-center justify-between space-x-6">
+      <div className="hidden md:flex items-center justify-between gap-2 overflow-x-auto scrollbar-hide">
         {categories.map((category, index) => (
           <div key={index} className="flex items-center flex-col">
             <Link href={`/categories/${category.slug}`}>
@@ -57,7 +75,7 @@ const Categories: React.FC = () => {
                   objectFit="cover"
                 />
               </div>
-              <span className="ml-2 text-black md:text-sm">
+              <span className="ml-2 text-black font-semibold sm:text-xs md:text-sm lg:text-md">
                 {category.title}
               </span>
             </Link>
@@ -66,8 +84,7 @@ const Categories: React.FC = () => {
       </div>
 
       {/* Mobile View */}
-
-      <div className="md:hidden justify-between flex overflow-x-auto  items-center mt-4 scrollbar-hide">
+      <div className="md:hidden justify-between flex overflow-x-auto items-center mt-4 scrollbar-hide">
         {categories.map((category, index) => (
           <div
             key={index}
@@ -84,7 +101,7 @@ const Categories: React.FC = () => {
                     className="rounded-full"
                   />
                 </div>
-                <span className="mt-1 text-black text-center text-xs ">
+                <span className="mt-1 text-black font-semibold text-center text-xs">
                   {category.title}
                 </span>
               </div>
