@@ -20,14 +20,15 @@ const Navbar: React.FC = () => {
         {/* Logo and Company Name */}
         <div className="flex items-center">
           <Link href="/">
-            <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" />
+            {/* <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" /> */}
 
-            {/* <Image
+            <Image
         src="/Flipkart-Logo.png" // Note: Path is relative to the `public` directory
         alt="flipkart"
-        width={90} // Adjust width and height as needed
-        height={90}
-      /> */}
+        width={70} // Adjust width and height as needed
+        height={70}
+        className=" text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out"
+      />
           </Link>
           <Link href="/">
             <h1 className="text-white text-sm sm:text-xl  md:text-2xl lg:text-3xl  font-semibold ml-2 cursor-pointer">
@@ -65,7 +66,14 @@ const Navbar: React.FC = () => {
         {/* Logo and Company Name */}
         <div className="flex items-center">
           <Link href="/">
-            <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" />
+            {/* <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" /> */}
+            <Image
+        src="/Flipkart-Logo.png" // Note: Path is relative to the `public` directory
+        alt="flipkart"
+        width={50} // Adjust width and height as needed
+        height={50}
+        className=" text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out"
+      />
           </Link>
           <Link href="/">
             <h1 className="text-white text-sm sm:text-xl  md:text-2xl lg:text-3xl font-semibold ml-2 cursor-pointer">

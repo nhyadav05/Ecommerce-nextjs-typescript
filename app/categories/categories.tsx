@@ -61,7 +61,7 @@ const categories = [
 
 const Categories: React.FC = () => {
   return (
-    <div className="bg-gray-50 px-4 py-2 md:py-3 mt-2 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto ">
+    <div className="bg-gray-50 px-4 py-2 md:py-3 mt-2 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
       {/* Desktop View */}
       <div className="hidden md:flex items-center justify-between gap-2 overflow-x-auto scrollbar-hide">
         {categories.map((category, index) => (
