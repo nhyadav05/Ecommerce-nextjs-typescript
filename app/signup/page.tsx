@@ -1,156 +1,192 @@
+
 "use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FaEye, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
-import { Alert } from "@/components/alert"; // Assuming you have your own Alert component
+import * as yup from "yup";
+import { useFormik } from "formik";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup: React.FC = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/;
 
-  const validateEmail = (email: string): boolean => {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(email);
-  };
-
-  const validatePassword = (password: string): boolean => {
-    return password.length >= 8 && password.length <= 16;
-  };
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: ""
+    },
+    validationSchema: yup.object().shape({
+      name: yup.string()
+        .required("Name is required")
+        .min(3, "Name should be at least 3 characters")
+        .max(50, "Name should not exceed 50 characters"),
+      email: yup.string()
+      .matches(emailRegex, 'Invalid email address')
+        .email("Invalid email")
+        .required("Email is required"),
+      password: yup.string()
+        .required("Password is required")
+        .min(8, "Password should be at least 8 characters")
+        .max(16, "Password should not exceed 16 characters")
+    }),
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const response = await axios.post(
+          "http://192.168.1.9:8001/api/auth/sign-up",
+          values
+        );
+        console.log("Signup success:", response.data);
+        toast.success("Signup successful! Redirecting to login...");
+        setTimeout(() => {
+          router.push("/home");
+        }, 2000);
+      } catch (error) {
+        console.error("Signup error:", error);
+        toast.error("Signup failed. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     }
+  });
 
-    if (!validatePassword(password)) {
-      setError("Password should be 8-16 characters long.");
-      return;
-    }
-
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const response = await axios.post(
-        "http://192.168.1.11:8001/api/auth/sign-up",
-        {
-          name,
-          email,
-          password,
-        }
-      );
-      console.log("Signup success:", response.data);
-      // Handle success scenario, e.g., show success message or redirect
-      router.push("/login");
-    } catch (error) {
-      console.error("Signup error:", error);
-      // Handle error scenario, e.g., display error message to user
-      setError("Signup failed. Please try again.");
-      setIsLoading(false);
-    }
-  };
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
   return (
-    <div className="h-screen flex justify-center items-center bg-indigo-100">
-      <form
-        onSubmit={onSubmit}
-        className="flex flex-col justify-center items-center space-y-6 max-w-md px-6 sm:px-4 lg:px-8 py-8 bg-gray-100 border rounded-lg shadow-lg"
-      >
-        <h2 className="text-2xl font-semibold text-gray-800">Signup</h2>
-        {/* Name input */}
-        <div className="w-full">
-          <label
-            htmlFor="name"
-            className="block mb-1 text-sm sm:text-base font-medium text-gray-700"
+    <div className="h-screen relative overflow-hidden">
+      <div className="absolute inset-0">
+        <img
+          src="/signup-img.jpg"
+          alt="Background Image"
+          className="w-full h-full object-cover filter blur-sm"
+        />
+      </div>
+      <div className="absolute inset-0 flex justify-center items-center bg-opacity-50 bg-gray-900">
+        <div className="w-full justify-center items-center max-w-screen-lg flex flex-col md:flex-row">
+          <form
+            onSubmit={formik.handleSubmit}
+            className="w-full md:w-1/2 flex flex-col justify-center items-center space-y-6 px-6 sm:px-4 lg:px-8 py-8 bg-gray-100 bg-opacity-70 backdrop-blur-lg border rounded-lg shadow-lg"
           >
-            Name
-          </label>
-          <div className="flex items-center border border-gray-300 rounded focus-within:border-blue-500">
-            <input
-              className="w-full px-3 py-2 text-sm sm:text-base leading-tight text-gray-700 focus:outline-none"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              id="name"
-              type="text"
-              placeholder="Enter your name"
-            />{" "}
-            <FaUser className="h-5 w-5 text-gray-700 mx-3" /> {/* User icon */}
-          </div>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800 mb-4">
+              Signup
+            </h2>
+
+            {/* Name input */}
+            <div className="w-full mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm sm:text-base font-medium text-gray-700"
+              >
+                Name
+              </label>
+              <div className="flex bg-white items-center border rounded focus-within:border-blue-500">
+                <input
+                  className={`w-full px-3 py-2 text-sm sm:text-base leading-tight text-gray-700 focus:outline-none ${
+                    formik.touched.name && formik.errors.name
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  id="name"
+                  type="text"
+                  {...formik.getFieldProps("name")}
+                  placeholder="Enter your name"
+                />
+                <FaUser className="h-5 w-5 text-gray-700 mx-3" />
+              </div>
+              {formik.touched.name && formik.errors.name ? (
+                <p className="text-red-500 text-sm mt-1">{formik.errors.name}</p>
+              ) : null}
+            </div>
+
+            {/* Email Input */}
+            <div className="w-full mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm sm:text-base font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <div className="flex bg-white items-center border rounded focus-within:border-blue-500">
+                <input
+                  className={`w-full px-3 py-2 text-sm sm:text-base leading-tight text-gray-700 focus:outline-none ${
+                    formik.touched.email && formik.errors.email
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  id="email"
+                  type="email"
+                  {...formik.getFieldProps("email")}
+                  placeholder="Enter your email"
+                />
+                <FaEnvelope className="h-5 w-5 text-gray-700 mx-3" />
+              </div>
+              {formik.touched.email && formik.errors.email ? (
+                <p className="text-red-500 text-sm mt-1">{formik.errors.email}</p>
+              ) : null}
+            </div>
+
+            {/* Password Input */}
+            <div className="w-full mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm sm:text-base font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  className={`w-full px-3 py-2 text-sm sm:text-base leading-tight text-gray-700 border rounded focus:outline-none ${
+                    formik.touched.password && formik.errors.password
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...formik.getFieldProps("password")}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-700 focus:outline-none"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="h-5 w-5 text-gray-700" />
+                  ) : (
+                    <FaEye className="h-5 w-5 text-gray-700" />
+                  )}
+                </button>
+              </div>
+              {formik.touched.password && formik.errors.password ? (
+                <p className="text-red-500 text-sm mt-1">{formik.errors.password}</p>
+              ) : null}
+            </div>
+
+            {/* Submit button */}
+            <button
+              className="w-full h-11 px-8 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Signup"}
+            </button>
+          </form>
         </div>
-        {/* Email input */}
-        <div className="w-full relative">
-          <label
-            htmlFor="email"
-            className="block mb-1 text-sm sm:text-base font-medium text-gray-700"
-          >
-            Email
-          </label>
-          <div className="flex items-center border border-gray-300 rounded focus-within:border-blue-500">
-            <input
-              className="w-full px-3 py-2 text-sm sm:text-base leading-tight text-gray-700 focus:outline-none"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-            />
-            <FaEnvelope className="h-5 w-5 text-gray-700 mx-3" />{" "}
-            {/* Mail icon */}
-          </div>
-        </div>
-        <div className="w-full relative">
-          <label
-            htmlFor="password"
-            className="block mb-1 text-sm sm:text-base font-medium text-gray-700"
-          >
-            Password
-          </label>
-          <input
-            className="w-full px-3 py-2 text-sm sm:text-base leading-tight text-gray-700 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            id="password"
-            placeholder="Enter your password"
-            type={showPassword ? "text" : "password"}
-          />
-          <button
-            type="button"
-            className="absolute bottom-0 top-[25px] right-0 flex items-center px-3 text-gray-700 focus:outline-none"
-            onClick={togglePasswordVisibility}
-          >
-            {showPassword ? (
-              <FaEyeSlash className="h-5 w-5" />
-            ) : (
-              <FaEye className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-        {error && <Alert>{error}</Alert>}
-        <button
-          className="inline-flex items-center justify-center w-full h-11 px-8 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "Signup"}
-        </button>
-      </form>
+        <ToastContainer />
+      </div>
     </div>
   );
 };
 
 export default Signup;
+
+

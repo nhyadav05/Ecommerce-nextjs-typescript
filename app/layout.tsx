@@ -1,119 +1,150 @@
 "use client";
-// RootLayout.tsx
-
-import React from "react";
+import { Inter } from "next/font/google";
+import "./globals.css";
 import { usePathname } from "next/navigation";
-import Navbar from "./navbar/Navbar";
 import Login from "./login/page";
+import Signup from "./signup/page"; // Assuming this is the correct path to your signup page
+import Navbar from "./navbar/Navbar";
+import Categories from "./categories/categories";
 import CartPage from "./cart/page";
 import Banner from "./banner/page";
 import ProductDetails from "./productDetails/page";
-import Categories from "./categories/categories";
-import Signup from "./signup/page";
+import AllProduct from "./Product/allProduct";
 
-const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const inter = Inter({ subsets: ["latin"] });
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   const pathname = usePathname();
 
-  // Conditionally render components based on the current path
   return (
     <html lang="en">
-      <body>
-        {pathname === "/" && <Login />} 
-        {pathname === "/signup" && <Signup />} 
-        {pathname === "/home" && ( 
-          <div>
-            <Navbar />
-            <Categories />
-            <Banner />
-            {children} 
-          </div>
-        )}
-        {pathname === "/productDetails" && ( 
-          <div>
-            <Navbar />
-            <Categories />
-            <ProductDetails />
-          </div>
-        )}
+      <body className={inter.className}>
 
-        {pathname === "/cart" && ( 
-          <div>
-            <Navbar />
-            <CartPage />
-          </div>
-        )}
+          <>
+            {pathname === "/home" && (
+              <div>
+                <Navbar />
+                <Categories />
+                <Banner />
+                <AllProduct />
+              </div>
+            )}
+            {pathname === "/cart" && (
+              <div>
+                <Navbar />
+                <CartPage />
+              </div>
+            )}
+            {pathname === "/productDetails" && (
+              <div>
+                <Navbar />
+                <Categories />
+                <ProductDetails />
+              </div>
+            )}
+            {pathname === "/signup" && (
+              <div>
+                <Signup />
+              </div>
+            )}
+            {pathname !== "/home" &&
+              pathname !== "/cart" &&
+              pathname !== "/productDetails" &&
+              pathname !== "/signup" && (
+                <div>
+                  <Login />
+                </div>
+              )}
+          
+          </>
       </body>
     </html>
   );
-};
-
-export default RootLayout;
+}
 
 
-// "use client";
-// import { useState, useEffect } from "react";
+
+
+
+// "use client"
+// import { useEffect } from 'react';
+// import { usePathname } from "next/navigation";
+// import Navbar from './navbar/Navbar';
+// import Login from './login/page'; // Assuming correct path to Login component
+// import Signup from './signup/page'; // Assuming correct path to Signup component
 // import { Inter } from "next/font/google";
 // import "./globals.css";
-// import { usePathname } from "next/navigation";
-// import Login from "./login/page";
-// import Navbar from "./navbar/Navbar";
-// import Categories from "./categories/categories";
-// import CartPage from "./cart/page";
-// import Banner from "./banner/page";
-// import ProductDetails from "./productDetails/page";
-// import Loader from "@/components/loader";
-
+// import ProductDetails from './productDetails/page';
+// import Categories from './categories/categories';
+// import CartPage from './cart/page';
+// import AllProduct from './Product/allProduct';
+// import Banner from './banner/page';
 // const inter = Inter({ subsets: ["latin"] });
-
 // export default function RootLayout({
 //   children,
 // }: Readonly<{
 //   children: React.ReactNode;
 // }>) {
 //   const pathname = usePathname();
-//   const [isLoading, setIsLoading] = useState(true); // State to manage loading
 
-//   // Simulate loading delay with setTimeout (you would replace this with actual data fetching)
 //   useEffect(() => {
-//     setTimeout(() => {
-//       setIsLoading(false);
-//     }, 1000); // Simulating 2 seconds loading time
+//     // Check if user is logged in (example: checking token in localStorage)
+//     const token = localStorage.getItem('token');
+
+//     // If no token is found and not on the login page, redirect to login
+//     if (!token && pathname !== '/login') {
+//      ('/login');
+//     }
 //   }, []);
 
 //   return (
 //     <html lang="en">
-//       <body className={inter.className}>
-//         {/* Conditional rendering based on pathname and loading state */}
-//         {isLoading ? (
-// <Loader/>
-//         ) : (
-//           <>
-//             {pathname === "/login" ? (
-//               <div>
-//                 <Login />
-//               </div>
-//             ) : pathname === "/cart" ? (
-//               <div>
-//                 <Navbar />
-//                 <CartPage />
-//               </div>
-//             ) : pathname === "/productDetails" ? (
-//               <div>
-//                 <Navbar />
-//                 <Categories />
-//                 <ProductDetails />
-//               </div>
-//             ) : (
-//               <div>
-//                 <Navbar />
-//                 <Categories />
-//                 <Banner />
-//                 {children}
-//               </div>
-//             )}
-//           </>
-//         )}
-//       </body>
+//        <body className={inter.className}>
+//     <>
+//       {/* Render children components based on pathname */}
+//       {pathname === '/login' && <Login />}
+//       {pathname === '/signup' && <Signup />}
+//       {pathname !== '/login' && pathname !== '/signup' &&  pathname === "/home" && (
+//                         <div>
+//                           <Navbar />
+//                           <Categories />
+//                           <Banner />
+//                           <AllProduct />
+//                         </div>
+//                       )}
+//                       {pathname === "/cart" && (
+//                         <div>
+//                           <Navbar />
+//                           <CartPage/>
+//                         </div>
+//                       )}
+//                       {pathname === "/productDetails" && (
+//                         <div>
+//                           <Navbar />
+//                           <Categories/>
+//                           <ProductDetails/>
+//                         </div>
+//                       )}
+//                       {pathname === "/signup" && (
+//                         <div>
+//                           <Signup />
+//                         </div>
+//                       )}
+//                       {pathname !== "/home" &&
+//                         pathname !== "/cart" &&
+//                         pathname !== "/productDetails" &&
+//                         pathname !== "/signup" && (
+//                           <div>
+//                             <Login />
+//                           </div>
+//                         )}
+   
+//     </>
+//     </body>
 //     </html>
 //   );
 // }

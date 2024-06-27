@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.1.4",
     "@types/react-slick": "^0.23.13",
     "axios": "^1.7.2",
+    "formik": "^2.4.6",
     "next": "14.2.4",
     "next-share": "^0.27.0",
     "react": "^18",
@@ -20,7 +21,9 @@
     "react-slick": "^0.30.2",
     "react-star-ratings": "^2.3.0",
     "react-toastify": "^10.0.5",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "universal-cookie": "^7.1.4",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
