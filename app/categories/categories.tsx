@@ -5,12 +5,13 @@ import axios from 'axios';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import API_BASE_URL from '@/apiConfig';
 
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    axios.get('http://192.168.1.9:8001/api/categories')
+    axios.get(`${API_BASE_URL}/api/categories`)
       .then(response => {
         setCategories(response.data);
       })
@@ -55,7 +56,7 @@ const Categories: React.FC = () => {
                     <img
                       src={category.image}
                       alt={category.name}
-                      className="object-cover h-full w-full"
+                      className="object-contain h-full w-full"
                     />
                   </div>
                   <span className="ml-2 text-black font-semibold text-sm">

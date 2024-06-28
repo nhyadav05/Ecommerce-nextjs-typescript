@@ -364,12 +364,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Card from "@/components/card";
+import API_BASE_URL from '@/apiConfig';
 
 const AllProduct: React.FC = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    axios.get('http://192.168.1.9:8001/api/products')
+    axios.get(`${API_BASE_URL}/api/products`)
       .then(response => {
         setProducts(response.data);
       })

@@ -9,8 +9,12 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from '@/apiConfig';
+interface SignupProps {
+  onSuccess: () => void; // Callback function for successful signup
+}
 
-const Signup: React.FC = () => {
+const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +44,7 @@ const Signup: React.FC = () => {
       try {
         setIsLoading(true);
         const response = await axios.post(
-          "http://192.168.1.9:8001/api/auth/sign-up",
+          `${API_BASE_URL}/api/auth/sign-up`,
           values
         );
         console.log("Signup success:", response.data);
@@ -56,6 +60,8 @@ const Signup: React.FC = () => {
       }
     }
   });
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);

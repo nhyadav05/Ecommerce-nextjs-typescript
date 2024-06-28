@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import Cookies from "universal-cookie";
-
+import API_BASE_URL from '@/apiConfig';
 
 const Login: React.FC = () => {
   const cookies = new Cookies();
@@ -43,15 +43,17 @@ const Login: React.FC = () => {
       try {
         setIsLoading(true);
         const response = await axios.post(
-          "http://192.168.1.9:8001/api/auth/sign-in",
+          `${API_BASE_URL}/api/auth/sign-in`,
           values
         );
-        console.log("Login success:", response.data);
-        toast.success("Login successful! Redirecting to login...");
+    
+        // Assuming successful login
+        localStorage.setItem("isLoggedIn", "true");
+    
+        toast.success("Login successful! Redirecting to home...");
         setTimeout(() => {
-          router.push("/home")
-          cookies.set("loggedin",true);
-        }, 2000);
+          router.push("/home"); // Navigate to home page after successful login
+        }, 2000); // Redirect after 2 seconds
       } catch (error) {
         console.error("Login error:", error);
         toast.error("Login failed. Please try again.");
@@ -59,21 +61,9 @@ const Login: React.FC = () => {
         setIsLoading(false);
       }
     }
+    
   });
-  // const handleLogin = async (values: { email: string; password: string }) => {
-  //   try {
-  //     const response = await axios.post(
-  //       "http://192.168.1.9:8001/api/auth/sign-in",
-  //       values
-  //     );
-  //     console.log("Login success:", response.data);
-  //     router.push("/home");
-  //     toast.success("Login successful!");
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     toast.error("Login failed. Please check your credentials.");
-  //   }
-  // };
+
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -85,7 +75,6 @@ const Login: React.FC = () => {
           className="w-full h-full object-cover filter blur-sm"
         />
       </div>
-
       {/* Login Form */}
       <div className="absolute inset-0 flex justify-center items-center bg-opacity-50 bg-gray-900">
         <div className="w-full justify-center items-center max-w-screen-lg flex flex-col md:flex-row">
@@ -177,10 +166,8 @@ const Login: React.FC = () => {
                   </Link>
                 </p>
               </form>
-     
         </div>
       </div>
-
       {/* Toast Container for Notifications */}
       <ToastContainer />
     </div>

@@ -1,10 +1,11 @@
 // Navbar.tsx
+"use client"
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { PiTruck } from "react-icons/pi";
 import Link from "next/link";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import SearchInput from "@/components/searchInput";
 
 const Navbar: React.FC = () => {
@@ -12,6 +13,13 @@ const Navbar: React.FC = () => {
     console.log("Searching for:", searchTerm);
     // Implement your search logic here
   };
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    router.push("/");
+  };
+
 
   return (
     <nav className="bg-blue-600 px-4 sm:px-8 py-3 md:py-4">
@@ -21,14 +29,6 @@ const Navbar: React.FC = () => {
         <div className="flex items-center gap-4">
           <Link href="/">
             <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" />
-
-            {/* <Image
-          src="/Flipkart-Logo.png" // Note: Path is relative to the `public` directory
-         alt="flipkart"
-         width={70} // Adjust width and height as needed
-         height={70}
-        className=" text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out"
-       />  */}
           </Link>
           <Link href="/">
             <h1 className="text-white text-sm sm:text-xl  md:text-2xl lg:text-3xl  font-semibold ml-2 cursor-pointer">
@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
         {/* Icons */}
         <div className="flex items-center space-x-10">
           {/* User Circle Icon */}
-          <Link href='/login'> <FaUserCircle className="text-white text-3xl cursor-pointer" /></Link>
+        <FaUserCircle className="text-white text-3xl cursor-pointer"  onClick={handleLogout}/>
          
           {/* Shopping Cart Icon with Badge */}
           <div className="relative">
@@ -85,7 +85,7 @@ const Navbar: React.FC = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-4">
-        <Link href='/login'>     <FaUserCircle className="text-white text-2xl cursor-pointer" /></Link>
+         <FaUserCircle className="text-white text-2xl cursor-pointer"  onClick={handleLogout} />
           <div className="relative">
             <Link href="/cart">
               <FiShoppingCart className="text-white text-2xl cursor-pointer" />
