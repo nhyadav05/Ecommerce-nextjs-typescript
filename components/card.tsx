@@ -130,13 +130,13 @@ const Card: React.FC<CardProps> = ({
 
   return (
     <div className="bg-white shadow-lg overflow-hidden relative">
-      <div className="relative">
+      <div className="relative  ">
         <Link href="/productDetails">
           <img
             src={imageSrc}
             alt={name}
             onError={handleImageError} // Handle image load error
-            className={`w-full h-80  object-center bg-contain transition-transform duration-300 transform hover:scale-105 ${
+            className={`w-full h-80  object-center bg-contain  transition-transform duration-300 transform hover:scale-105 ${
               imageError ? 'bg-gray-800' : '' // Conditionally set background color
             }`}
           />
@@ -174,7 +174,7 @@ const Card: React.FC<CardProps> = ({
         </Link>
         <div className="flex gap-2 items-center mt-4">
           <div className="text-gray-900 font-bold text-lg">₹{price}</div>
-          <del className="text-gray-400 font-bold text-sm">
+          <del className="text-gray-400 font-bold text-sm whitespace-nowrap text-ellipsis">
             ₹{discountPrice}
           </del>
           {offer && (

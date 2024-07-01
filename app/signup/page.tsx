@@ -1,7 +1,5 @@
-
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FaEye, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
@@ -9,12 +7,15 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from '@/apiConfig';
-interface SignupProps {
-  onSuccess: () => void; // Callback function for successful signup
-}
+import API_BASE_URL from "@/apiConfig";
 
-const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
+const Signup: React.FC = () => {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Access localStorage or other client-side APIs here
+    }
+  }, []);
+
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,44 +25,54 @@ const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
     initialValues: {
       name: "",
       email: "",
-      password: ""
+      password: "",
     },
     validationSchema: yup.object().shape({
-      name: yup.string()
+      name: yup
+        .string()
         .required("Name is required")
         .min(3, "Name should be at least 3 characters")
         .max(50, "Name should not exceed 50 characters"),
-      email: yup.string()
-      .matches(emailRegex, 'Invalid email address')
+      email: yup
+        .string()
+        .matches(emailRegex, 'Invalid email address')
         .email("Invalid email")
-        .required("Email is required"),
-      password: yup.string()
+        .required("Email is required")
+        .test('firstLetter', 'Email first letter should not be uppercase', function(value) {
+          const emailParts = value.split('@');
+          if (emailParts.length === 2) {
+            const localPart = emailParts[0];
+            return !/^[A-Z]/.test(localPart); // Ensure first letter of local part is not uppercase
+          }
+          return true;
+        }),
+      password: yup
+        .string()
         .required("Password is required")
         .min(8, "Password should be at least 8 characters")
-        .max(16, "Password should not exceed 16 characters")
+        .max(16, "Password should not exceed 16 characters"),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const response = await axios.post(
-          `${API_BASE_URL}/api/auth/sign-up`,
-          values
-        );
+        const response = await axios.post(`${API_BASE_URL}/api/auth/sign-up`, values);
         console.log("Signup success:", response.data);
-        toast.success("Signup successful! Redirecting to login...");
+        toast.success("Signup successful! Redirecting to home...");
         setTimeout(() => {
           router.push("/home");
-        }, 2000);
+        }, 1000);
       } catch (error) {
         console.error("Signup error:", error);
-        toast.error("Signup failed. Please try again.");
+        if (error.response && error.response.status === 409) {
+          toast.error("Email already exists. Please use a different email.");
+        } else {
+          toast.error("Signup failed. Please try again.");
+        }
       } finally {
         setIsLoading(false);
       }
-    }
+    },
   });
-
-
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -194,5 +205,7 @@ const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
 };
 
 export default Signup;
+
+
 
 
