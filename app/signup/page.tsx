@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FaEye, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
@@ -10,12 +10,6 @@ import "react-toastify/dist/ReactToastify.css";
 import API_BASE_URL from "@/apiConfig";
 
 const Signup: React.FC = () => {
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Access localStorage or other client-side APIs here
-    }
-  }, []);
-
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,9 +53,9 @@ const Signup: React.FC = () => {
         console.log("Signup success:", response.data);
         toast.success("Signup successful! Redirecting to home...");
         setTimeout(() => {
-          router.push("/home");
-        }, 1000);
-      } catch (error) {
+          router.push("/home"); // Redirect to home page after successful signup
+        }, 2000); // Redirect to home page after successful signup
+      } catch (error: any) { // Explicitly declare error as any
         console.error("Signup error:", error);
         if (error.response && error.response.status === 409) {
           toast.error("Email already exists. Please use a different email.");
@@ -205,6 +199,8 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
+
+
 
 
 
