@@ -1,10 +1,11 @@
-
 "use client"
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import API_BASE_URL from '@/apiConfig';
 import Card from '@/components/card';
-import Pagination from '@/components/pagination'; // Adjust path as per your project structure
+import Pagination from '@/components/pagination';
+import Loader from '@/components/loader';
+
 interface Product {
   _id: string;
   name: string;
@@ -12,9 +13,20 @@ interface Product {
   categoryId: string;
   price: number;
 }
+
+interface PaginationData {
+  totalPages: number;
+}
+
+interface ApiResponse {
+  products: Product[];
+  pagination: PaginationData;
+}
+
 interface Props {
   selectedCategoryId: string | null;
 }
+
 const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +36,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
 
   useEffect(() => {
     fetchProducts(currentPage);
-  }, [currentPage, selectedCategoryId]); // Trigger fetchProducts when currentPage or selectedCategoryId changes
+  }, [currentPage, selectedCategoryId]);
 
   const fetchProducts = (page: number) => {
     setLoading(true);
@@ -35,7 +47,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
       apiUrl += `&categoryId=${selectedCategoryId}`;
     }
 
-    axios.get(apiUrl)
+    axios.get<ApiResponse>(apiUrl)
       .then(response => {
         setProducts(response.data.products);
         setTotalPages(response.data.pagination.totalPages);
@@ -53,7 +65,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (error) {
@@ -68,18 +80,19 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
             {products.map((product: Product) => (
               <Card
                 key={product._id}
-                imageSrc={product.images[0]} // Assuming first image is used for simplicity
+                imageSrc={product.images[0]}
                 name={product.name}
                 title={product.name}
-                category={product.categoryId} // You might need to fetch category name based on categoryId
+                category={product.categoryId}
                 price={product.price}
-                discountPrice={product.price * 0.9} // Example discount calculation
-                offer="10% off" // Example offer, adjust as needed
+                discountPrice={product.price * 0.9}
+                offer="10% off"
+                productId={product._id} // Ensure productId is passed
               />
             ))}
           </div>
           {totalPages > 1 && (
-            <div className="container px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+            <div className="flex justify-center mt-4">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -89,7 +102,9 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
           )}
         </div>
       ) : (
-        <div>No products found.</div>
+        <div className="container px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+          <p className="text-center font-semibold text-red-500">No products found.</p>
+        </div>
       )}
     </div>
   );

@@ -1,11 +1,12 @@
-"use client"
 // app/categories/categories.tsx
+"use client"
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import API_BASE_URL from '@/apiConfig';
+import { useRouter } from 'next/navigation';
 
 interface Category {
   _id: string;
@@ -14,12 +15,13 @@ interface Category {
 }
 
 interface Props {
-  onCategorySelect: (categoryId: string) => void; // Callback to update selected category ID
-  selectedCategoryId: string | null; // Currently selected category ID
+  onCategorySelect: (categoryId: string) => void;
+  selectedCategoryId: string | null;
 }
 
 const Categories: React.FC<Props> = ({ onCategorySelect, selectedCategoryId }) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     axios.get(`${API_BASE_URL}/api/categories`)
@@ -32,8 +34,8 @@ const Categories: React.FC<Props> = ({ onCategorySelect, selectedCategoryId }) =
   }, []);
 
   const handleCategoryClick = (categoryId: string) => {
-    // Call the prop function to update selectedCategoryId in the parent component
-    onCategorySelect(categoryId);
+    onCategorySelect(categoryId); // Update selectedCategoryId in parent component
+    // router.push(`/categories/${categoryId}`); // Navigate to category page
   };
 
   const sliderSettings = {
@@ -63,7 +65,7 @@ const Categories: React.FC<Props> = ({ onCategorySelect, selectedCategoryId }) =
       <div className="hidden md:block pl-[30px] pr-[30px] bg-blue-100">
         <Slider {...sliderSettings}>
           {categories.map((category: Category) => (
-            <div key={category._id} className={`px-2 py-2 ${selectedCategoryId === category._id ? 'bg-gray-200' : ''}`}>
+            <div key={category._id} className={`px-2 py-2 ${selectedCategoryId === category._id ? 'bg-white' : ''}`}>
               <div className="flex flex-col items-center" onClick={() => handleCategoryClick(category._id)}>
                 <div className="w-[80px] h-[80px] relative overflow-hidden">
                   <img
@@ -80,6 +82,7 @@ const Categories: React.FC<Props> = ({ onCategorySelect, selectedCategoryId }) =
           ))}
         </Slider>
       </div>
+      {/* Mobile view */}
       <div className="md:hidden justify-between flex overflow-x-auto items-center mt-4 scrollbar-hide">
         {categories.map((category: Category) => (
           <div key={category._id} className={`flex-shrink-0 flex flex-col items-center mr-4 ${selectedCategoryId === category._id ? 'bg-gray-200' : ''}`}>
@@ -103,4 +106,3 @@ const Categories: React.FC<Props> = ({ onCategorySelect, selectedCategoryId }) =
 };
 
 export default Categories;
-

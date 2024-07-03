@@ -52,6 +52,7 @@ const Signup: React.FC = () => {
         const response = await axios.post(`${API_BASE_URL}/api/auth/sign-up`, values);
         console.log("Signup success:", response.data);
         toast.success("Signup successful! Redirecting to home...");
+        localStorage.setItem("isLoggedIn", "true");
         setTimeout(() => {
           router.push("/home"); // Redirect to home page after successful signup
         }, 2000); // Redirect to home page after successful signup

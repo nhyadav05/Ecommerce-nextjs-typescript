@@ -27,16 +27,15 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages, onPageChange }) 
 
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(
-        <p
+        <button
           key={i}
-       
           onClick={() => onPageChange(i)}
           className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
             currentPage === i ? 'bg-indigo-600 text-white' : 'text-gray-900'
           } ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0`}
         >
           {i}
-        </p>
+        </button>
       );
     }
 
@@ -46,28 +45,15 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages, onPageChange }) 
   return (
     <nav className="flex items-center justify-center border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-gray-700">
-            Showing
-            <span className="font-medium">{(currentPage - 1) * 10 + 1}</span>
-            to
-            <span className="font-medium">
-              {Math.min(currentPage * 10, totalPages * 10)}
-            </span>
-            of
-            <span className="font-medium">{totalPages * 10}</span>
-            results
-          </p>
-        </div>
         <div className="flex-1 flex justify-center">
           <div className="flex space-x-4">
             {/* Previous button */}
-            <a
-              href="#"
+            <button
               onClick={() => onPageChange(currentPage - 1)}
               className={`relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                 currentPage === 1 ? 'pointer-events-none opacity-50' : ''
               }`}
+              disabled={currentPage === 1}
             >
               <span className="sr-only">Previous</span>
               <svg
@@ -82,18 +68,18 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages, onPageChange }) 
                   clipRule="evenodd"
                 />
               </svg>
-            </a>
+            </button>
 
             {/* Page numbers */}
             {renderPageNumbers()}
 
             {/* Next button */}
-            <a
-              href="#"
+            <button
               onClick={() => onPageChange(currentPage + 1)}
               className={`relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                 currentPage === totalPages ? 'pointer-events-none opacity-50' : ''
               }`}
+              disabled={currentPage === totalPages}
             >
               <span className="sr-only">Next</span>
               <svg
@@ -108,7 +94,7 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages, onPageChange }) 
                   clipRule="evenodd"
                 />
               </svg>
-            </a>
+            </button>
           </div>
         </div>
       </div>

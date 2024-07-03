@@ -1,5 +1,5 @@
 // Navbar.tsx
-"use client"
+"use client";
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
@@ -7,6 +7,7 @@ import { PiTruck } from "react-icons/pi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SearchInput from "@/components/searchInput";
+import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 
 const Navbar: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -44,6 +45,12 @@ const Navbar: React.FC = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-10">
+          <div className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none">
+          <Link href="/wish-list">
+              <HeartSolidIcon className="h-5 w-5 text-red-500" />
+            </Link>
+          </div>
+
           {/* User Circle Icon */}
           <FaUserCircle
             className="text-white text-3xl cursor-pointer"
@@ -81,6 +88,12 @@ const Navbar: React.FC = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-4">
+          <div className="p-0.5 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none">
+            <Link href="/wish-list">
+              <HeartSolidIcon className="h-5 w-5 text-red-500" />
+            </Link>
+          </div>
+
           <FaUserCircle
             className="text-white text-2xl cursor-pointer"
             onClick={handleLogout}
@@ -105,4 +118,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
