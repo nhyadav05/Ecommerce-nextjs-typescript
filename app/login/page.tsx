@@ -51,6 +51,7 @@ const Login: React.FC = () => {
         // localStorage.setItem("isLoggedIn", "true");
         toast.success("Login successful! Redirecting to home...");
           router.push("/home"); 
+          cookies.set("userId",response.data._id);
       } catch (error) {
         console.error("Login error:", error);
         toast.error("Login failed. Please try again.");

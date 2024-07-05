@@ -1,6 +1,6 @@
 // Navbar.tsx
 "use client";
-import React from "react";
+import React,{useState} from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { PiTruck } from "react-icons/pi";
@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
                 href="/cart"
               />
               <button className="absolute top-[-0.75rem] right-[-15px] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
-                <span className="text-xs font-bold text-white">0</span>
+              <span className="text-xs font-bold text-white">0</span>
               </button>
             </Link>
           </div>
@@ -101,9 +101,9 @@ const Navbar: React.FC = () => {
           />
           <div className="relative">
             <Link href="/cart">
-              <FiShoppingCart className="text-white text-2xl cursor-pointer" />
+              <FiShoppingCart className="text-white text-2xl cursor-pointer"   />
               <button className="absolute top-[-0.75rem] right-[-0.75rem] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
-                <span className="text-xs font-bold text-white">0</span>
+              <span className="text-xs font-bold text-white">0</span>
               </button>
             </Link>
           </div>
