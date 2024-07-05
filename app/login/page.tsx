@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
@@ -9,11 +9,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import API_BASE_URL from "@/apiConfig";
+import Cookies from "universal-cookie";
 
 const Login: React.FC = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  let cookies = new Cookies();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -45,13 +47,10 @@ const Login: React.FC = () => {
           values
         );
         console.log(response, "Login successful");
-
-        localStorage.setItem("isLoggedIn", "true");
+        cookies.set("loggedin", true);
+        // localStorage.setItem("isLoggedIn", "true");
         toast.success("Login successful! Redirecting to home...");
-
-        setTimeout(() => {
-          router.push("/home"); // Navigate to home page after successful login
-        }, 2000); // Redirect after 2 seconds
+          router.push("/home"); 
       } catch (error) {
         console.error("Login error:", error);
         toast.error("Login failed. Please try again.");
@@ -164,12 +163,14 @@ const Login: React.FC = () => {
             </button>
 
             {/* Link to Signup */}
-            <p className="text-center text-gray-700 text-sm sm:text-base mt-2">
+            <div className="text-center text-gray-700 text-sm sm:text-base mt-2">
               Need to create an account?{" "}
               <Link href="/signup" passHref>
-                <p className="text-blue-500 hover:underline">Create Account</p>
+                <div className="text-blue-500 hover:underline">
+                  Create Account
+                </div>
               </Link>
-            </p>
+            </div>
           </form>
         </div>
       </div>
@@ -180,5 +181,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
-

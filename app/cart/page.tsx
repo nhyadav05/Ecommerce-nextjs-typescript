@@ -2,7 +2,8 @@
 // pages/cart.tsx
 import React, { useState } from "react";
 import { AiFillSafetyCertificate } from "react-icons/ai";
-import { FaRegHeart, FaHeart, FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt } from "react-icons/fa";
+import Navbar from "../navbar/Navbar";
 
 interface CartItemProps {
   imageUrl: string;
@@ -92,92 +93,93 @@ const CartPage: React.FC = () => {
     }
   };
   return (
-
+    <>
+      <Navbar />
       <div className="px-4 py-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto bg-gray-50">
         <h2 className="text-3xl font-bold mb-4">View Your Cart</h2>
         <div className="grid grid-cols-1  md:grid-cols-2 gap-4 bg-white  h-fit">
-                {/* Product Image */}
+          {/* Product Image */}
           <div className="flex flex-col  ">
             <div className="border-2 border-gray-200 p-2 rounded-sm overflow-y-auto scroll-hide h-96 ">
-
-            {cartItems.map((item, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-lg p-4 mb-4 shadow-md "
-              >
-                <div className="flex flex-col md:flex-row sm:flex-row">
-       
-                  <div className="md:mr-4 mb-4 md:mb-0 w-fit">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="w-28 h-28 md:w-36 md:h-36 object-contain"
-                    />
-                  </div>
-    
-                  <div className="flex-1">
-                    <div className="sm:flex-col sm:gap-4">
-                      {" "}
-                      <div className="font-bold mb-2">
-                        <span className="text-gray-900 hover:text-blue-600">
-                          {item.title}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600 mb-2 ">
-                        {item.size}
-                      </div>
-                      <div className="flex items-center mb-2">
-                        <span className="text-green-600 font-bold mr-1">
-                          ₹{item.discountedPrice}
-                        </span>
-                        <span className="text-gray-400 line-through">
-                          ₹{item.originalPrice}
-                        </span>
-                        <span className="text-green-600 ml-2">
-                          {item.discount}
-                        </span>
-                      </div>
+              {cartItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-lg p-4 mb-4 shadow-md "
+                >
+                  <div className="flex flex-col md:flex-row sm:flex-row">
+                    <div className="md:mr-4 mb-4 md:mb-0 w-fit">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-28 h-28 md:w-36 md:h-36 object-contain"
+                      />
                     </div>
 
-                    {/* Quantity Selector and Actions */}
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center">
-                        <button
-                          className="border border-gray-300 px-2 py-1  mr-2"
-                          onClick={decrement}
-                        >
-                          -
-                        </button>
-                        <input
-                          type="tel"
-                          className="border border-gray-300 focus:border-blue-600 hover:border-blue-600 px-2 py-1 w-20 text-center"
-                          value={count}
-                          onChange={handleChange}
-                        />
-
-                        <button
-                          className="border border-gray-300 px-2 py-1  ml-2"
-                          onClick={increment}
-                        >
-                          +
-                        </button>
+                    <div className="flex-1">
+                      <div className="sm:flex-col sm:gap-4">
+                        {" "}
+                        <div className="font-bold mb-2">
+                          <span className="text-gray-900 hover:text-blue-600">
+                            {item.title}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-2 ">
+                          {item.size}
+                        </div>
+                        <div className="flex items-center mb-2">
+                          <span className="text-green-600 font-bold mr-1">
+                            ₹{item.discountedPrice}
+                          </span>
+                          <span className="text-gray-400 line-through">
+                            ₹{item.originalPrice}
+                          </span>
+                          <span className="text-green-600 ml-2">
+                            {item.discount}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-sm flex sm:flex-col  md:flex-col lg:flex-row md:items-center md:justify-end gap-2">
-                        <button
-                          className="text-gray-600 hover:text-blue-600 flex items-center ml-2"
-                          onClick={handleRemoveClick}
-                        >
-                          <FaTrashAlt className="mr-1" />
-                          <span className="text-sm font-semibold">Remove</span>
-                        </button>
+
+                      {/* Quantity Selector and Actions */}
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="flex items-center">
+                          <button
+                            className="border border-gray-300 px-2 py-1  mr-2"
+                            onClick={decrement}
+                          >
+                            -
+                          </button>
+                          <input
+                            type="tel"
+                            className="border border-gray-300 focus:border-blue-600 hover:border-blue-600 px-2 py-1 w-20 text-center"
+                            value={count}
+                            onChange={handleChange}
+                          />
+
+                          <button
+                            className="border border-gray-300 px-2 py-1  ml-2"
+                            onClick={increment}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="text-sm flex sm:flex-col  md:flex-col lg:flex-row md:items-center md:justify-end gap-2">
+                          <button
+                            className="text-gray-600 hover:text-blue-600 flex items-center ml-2"
+                            onClick={handleRemoveClick}
+                          >
+                            <FaTrashAlt className="mr-1" />
+                            <span className="text-sm font-semibold">
+                              Remove
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
             </div>
-         
+
             <div className="md:col-span-1 flex justify-end mt-4">
               <button
                 type="submit"
@@ -222,16 +224,16 @@ const CartPage: React.FC = () => {
                   />
                 </span>
                 <div className="text-md font-bold text-[#878787] sm:text-xs  md:text-sm lg:text-md">
-                  <p className="whitespace-normal">
+                  <div className="whitespace-normal">
                     Safe and Secure Payments. Easy returns.
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
+    </>
   );
 };
 

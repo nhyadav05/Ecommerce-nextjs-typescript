@@ -6,19 +6,20 @@ import { FiShoppingCart } from "react-icons/fi";
 import { PiTruck } from "react-icons/pi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SearchInput from "@/components/searchInput";
+import SearchInput from "../components/searchInput";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
+import Cookies from "universal-cookie";
 
 const Navbar: React.FC = () => {
+  let cookies = new Cookies();
   const handleSearch = (searchTerm: string) => {
     console.log("Searching for:", searchTerm);
-    // Implement your search logic here
-    // For now, just log the search term
   };
+  
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
+    cookies.remove("loggedin");
     router.push("/");
   };
 
@@ -46,7 +47,7 @@ const Navbar: React.FC = () => {
         {/* Icons */}
         <div className="flex items-center space-x-10">
           <div className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none">
-          <Link href="/wish-list">
+            <Link href="/wishlist">
               <HeartSolidIcon className="h-5 w-5 text-red-500" />
             </Link>
           </div>
@@ -89,7 +90,7 @@ const Navbar: React.FC = () => {
         {/* Icons */}
         <div className="flex items-center space-x-4">
           <div className="p-0.5 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none">
-            <Link href="/wish-list">
+            <Link href="/wishlist">
               <HeartSolidIcon className="h-5 w-5 text-red-500" />
             </Link>
           </div>
