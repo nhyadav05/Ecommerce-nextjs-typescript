@@ -5,6 +5,8 @@ import API_BASE_URL from '@/apiConfig';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import Navbar from '../navbar/Navbar';
 import Cookies from 'universal-cookie';
+import Link from "next/link";
+import Loader from '../components/loader';
 
 interface Product {
   _id: string;
@@ -55,24 +57,6 @@ const WishListPage: React.FC = () => {
     }
   };
 
-  const handleAddToWishlist = async (productId: string) => {
-    const userId = cookies.get('userId');
-    if (!userId) {
-      console.error('User ID not found in cookies.');
-      return;
-    }
-
-    try {
-      await axios.post(`${API_BASE_URL}/api/wishlist/add`, {
-        userId,
-        productId,
-      });
-      // Optionally update local state or fetch wishlist again
-      fetchWishlist(userId);
-    } catch (error) {
-      console.error('Error adding product to wishlist:', error);
-    }
-  };
 
   const handleRemoveFromWishlist = async (productId: string) => {
     const userId = cookies.get('userId');
@@ -95,6 +79,25 @@ const WishListPage: React.FC = () => {
     }
   };
 
+  const handleAddToWishlist = async (productId: string) => {
+    const userId = cookies.get('userId');
+    if (!userId) {
+      console.error('User ID not found in cookies.');
+      return;
+    }
+  
+    try {
+      await axios.post(`${API_BASE_URL}/api/carts/add/${productId}`, { userId });
+      alert('Product added to cart successfully!');
+      // Optionally update local state or fetch wishlist again
+      fetchWishlist(userId);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      alert('Failed to add product to cart. Please try again later.');
+    }
+  };
+  
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.src = '/no-product-found.png'; // Set default image path on error
   };
@@ -104,18 +107,20 @@ const WishListPage: React.FC = () => {
       <Navbar />
       <div className="container px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
         {loading ? (
-          <p>Loading...</p>
+        <Loader/>
         ) : wishlist.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             {wishlist.map((wishlistItem) => (
               <div key={wishlistItem._id} className="bg-white shadow-lg overflow-hidden relative">
                 <div className="relative">
+                <Link href={`/product/${wishlistItem._id}`}>
                   <img
                     src={wishlistItem.images[0]}
                     alt={wishlistItem.name}
                     onError={handleImageError} // Handle image load error
                     className="w-full h-80 object-center bg-contain transition-transform duration-300 transform hover:scale-105"
                   />
+                  </Link>
                   <button
                     className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
                     onClick={() => handleRemoveFromWishlist(wishlistItem._id)}
@@ -125,9 +130,9 @@ const WishListPage: React.FC = () => {
                 </div>
                 <div className="p-4">
                   <h2 className="text-xl font-semibold mb-2">
-                    <p className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <Link  href={`/product/${wishlistItem._id}`} className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis">
                       {wishlistItem.name}
-                    </p>
+                    </Link>
                   </h2>
                  
                   <div className="flex gap-2 items-center mt-4">

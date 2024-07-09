@@ -177,7 +177,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                         className={`h-6 w-6 ${
                           likedProducts.includes(product._id)
                             ? "text-red-600" // Liked color
-                            : "text-gray-600" // Default color
+                            : "text-gray-400" // Default color
                         }`}
                       />
                     </button>

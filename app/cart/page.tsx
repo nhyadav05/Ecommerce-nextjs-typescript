@@ -8,6 +8,7 @@ import API_BASE_URL from "@/apiConfig";
 import Cookies from "universal-cookie";
 import { AiFillSafetyCertificate } from "react-icons/ai";
 import Link from "next/link";
+import Loader from "../components/loader";
 
 interface CartItem {
   _id: string;
@@ -155,7 +156,7 @@ const CartPage: React.FC = () => {
       <div className="px-4 py-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto bg-gray-50">
         <h2 className="lg:text-xl sm:text-sm md:text-md  font-bold mb-4">View Your Cart</h2>
         {loading ? (
-          <p className="text-center">Loading...</p>
+    <Loader/>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : cartItems.length === 0 ? (
