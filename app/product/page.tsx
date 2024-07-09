@@ -1,11 +1,10 @@
-// page.tsx
-"use client";
+"use client"
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "@/apiConfig";
 import Pagination from "../components/pagination";
 import Link from "next/link";
-import { HeartIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Cookies from "universal-cookie";
 
 interface Product {
@@ -39,11 +38,18 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  let cookies = new Cookies();
+  const [likedProducts, setLikedProducts] = useState<string[]>([]); // State to store liked product IDs
+  const cookies = new Cookies();
 
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage, selectedCategoryId]);
+
+  useEffect(() => {
+    // Load liked products from cookies or storage if needed
+    const likedProductsFromCookies = cookies.get("likedProducts") || [];
+    setLikedProducts(likedProductsFromCookies);
+  }, []);
 
   const fetchProducts = (page: number) => {
     setLoading(true);
@@ -67,20 +73,22 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   };
 
   const addToCart = (productId: string) => {
-    const cookies = new Cookies();
-    const userId = cookies.get('userId');
-  
+    const userId = cookies.get("userId");
     axios
       .post(`${API_BASE_URL}/api/carts/add/${productId}`, { userId })
       .then(() => {
-        alert('Product added to cart successfully!');
+        alert("Product added to cart successfully!");
         // Update cart count in navbar (assuming it's already set up to read from cookies)
-        const cartItems = cookies.get('cartItems') || [];
-        cookies.set('cartItems', [...cartItems, { productId, quantity: 1 }], { path: '/' });
+        const cartItems = cookies.get("cartItems") || [];
+        cookies.set(
+          "cartItems",
+          [...cartItems, { productId, quantity: 1 }],
+          { path: "/" }
+        );
       })
       .catch((error) => {
-        console.error('Error adding product to cart:', error);
-        alert('Failed to add product to cart. Please try again later.');
+        console.error("Error adding product to cart:", error);
+        alert("Failed to add product to cart. Please try again later.");
       });
   };
 
@@ -94,9 +102,46 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
     e.currentTarget.src = "/no-product-found.png"; // Set default image path on error
   };
 
+  const handleLikeToggle = (productId: string) => {
+    if (likedProducts.includes(productId)) {
+      // Remove from wishlist
+      axios
+        .delete(`${API_BASE_URL}/api/wishlist/remove`, {
+          data: { userId: cookies.get("userId"), productId },
+        })
+        .then(() => {
+          const updatedLikedProducts = likedProducts.filter(
+            (id) => id !== productId
+          );
+          setLikedProducts(updatedLikedProducts);
+          cookies.set("likedProducts", updatedLikedProducts);
+        })
+        .catch((error) => {
+          console.error("Error removing product from wishlist:", error);
+        });
+    } else {
+      // Add to wishlist
+      axios
+        .post(`${API_BASE_URL}/api/wishlist/add`, {
+          userId: cookies.get("userId"),
+          productId,
+        })
+        .then(() => {
+          const updatedLikedProducts = [...likedProducts, productId];
+          setLikedProducts(updatedLikedProducts);
+          cookies.set("likedProducts", updatedLikedProducts);
+        })
+        .catch((error) => {
+          console.error("Error adding product to wishlist:", error);
+        });
+    }
+  };
+
   if (error) {
     return (
-      <div className="text-center font-semibold text-red-600 p-28">{error}</div>
+      <div className="text-center font-semibold text-red-600 p-28">
+        {error}
+      </div>
     );
   }
 
@@ -114,7 +159,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                   <div className="relative">
                     <Link href={`/product/${product._id}`}>
                       <img
-                        src={product.images[0]}
+                        src={product.images[0] || "/no-product-found.png"}
                         alt={product.name}
                         onError={handleImageError}
                         className="w-full h-80 object-center bg-contain transition-transform duration-300 transform hover:scale-105"
@@ -125,20 +170,25 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent parent click event
                         e.preventDefault(); // Prevent any default action
-                        // Handle heart icon click logic here
+                        handleLikeToggle(product._id); // Handle heart icon click logic here
                       }}
                     >
-                      <HeartIcon className="h-6 w-6 text-gray-600" />
+                      <HeartSolidIcon
+                        className={`h-6 w-6 ${
+                          likedProducts.includes(product._id)
+                            ? "text-red-600" // Liked color
+                            : "text-gray-600" // Default color
+                        }`}
+                      />
                     </button>
                   </div>
                   <h2 className="text-xl font-semibold mb-2">
                     <Link href={`/product/${product._id}`}>
-                      <p className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden  text-ellipsis">
+                      <p className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis">
                         {product.name}
                       </p>
                     </Link>
                   </h2>
-                  {/* <p className="text-gray-600">{product.description}</p> */}
                   <div className="flex gap-2 items-center mt-4">
                     <div className="text-gray-900 font-bold text-lg">
                       ₹{product.price}

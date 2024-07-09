@@ -11,22 +11,22 @@ import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Cookies from "universal-cookie";
 
 const Navbar: React.FC = () => {
-
   const router = useRouter();
   const [cartCount, setCartCount] = useState<number>(0);
   const cookies = new Cookies();
   const handleSearch = (searchTerm: string) => {
     console.log("Searching for:", searchTerm);
   };
-  
+
   useEffect(() => {
-    const cartItems = cookies.get('cartItems') || [];
-    const count = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
+    const cartItems = cookies.get("cartItems") || [];
+    const count =
+      cartItems.length > 0
+        ? cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0)
+        : 0;
     setCartCount(count);
   }, [cookies]);
   
-  
-
 
   const handleLogout = () => {
     cookies.remove("loggedin");
@@ -75,14 +75,13 @@ const Navbar: React.FC = () => {
                 className="text-white text-2xl cursor-pointer"
                 href="/cart"
               />
-              {cartCount > 0  ? (
+              {cartCount > 0 ? (
                 <button className="absolute top-[-0.75rem] right-[-15px] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
                   <span className="text-xs font-bold text-white">
                     {cartCount}
                   </span>
                 </button>
               ) : null}
-
             </Link>
           </div>
         </div>
@@ -118,13 +117,12 @@ const Navbar: React.FC = () => {
             <Link href="/cart">
               <FiShoppingCart className="text-white text-2xl cursor-pointer" />
               {cartCount > 0 ? (
-              <button className="absolute top-[-0.75rem] right-[-0.75rem] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
-                <span className="text-xs font-bold text-white">
-                  {cartCount}
-                </span>
-              </button>
-             ) : null}
-
+                <button className="absolute top-[-0.75rem] right-[-0.75rem] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
+                  <span className="text-xs font-bold text-white">
+                    {cartCount}
+                  </span>
+                </button>
+              ) : null}
             </Link>
           </div>
         </div>

@@ -7,6 +7,7 @@ import Navbar from "../navbar/Navbar";
 import API_BASE_URL from "@/apiConfig";
 import Cookies from "universal-cookie";
 import { AiFillSafetyCertificate } from "react-icons/ai";
+import Link from "next/link";
 
 interface CartItem {
   _id: string;
@@ -19,6 +20,7 @@ interface CartItem {
   discountedPrice: number;
   discount: string;
   quantity: number;
+  totalPrice: number;
 }
 
 const CartPage: React.FC = () => {
@@ -26,15 +28,19 @@ const CartPage: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [inputBorderColor, setInputBorderColor] = useState<string>("border-gray-200");
+  const [inputBorderColor, setInputBorderColor] =
+    useState<string>("border-gray-200");
   const cookies = new Cookies();
   const userId = cookies.get("userId");
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/carts/products/${userId}`);
+        const response = await axios.get(
+          `${API_BASE_URL}/api/carts/products/${userId}`
+        );
         setCartItems(response.data.carts);
+        setTotalPrice(response.data.totalPrice);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -42,6 +48,7 @@ const CartPage: React.FC = () => {
         setLoading(false);
       }
     };
+
     if (userId) {
       fetchCartItems();
     } else {
@@ -50,20 +57,10 @@ const CartPage: React.FC = () => {
     }
   }, [userId]);
 
-  useEffect(() => {
-    // Calculate total price whenever cartItems change
-    const calculateTotalPrice = () => {
-      const totalPrice = cartItems.reduce((acc, item) => {
-        const price = item.discountedPrice || 0;
-        const qty = item.quantity || 0;
-        return acc + price * qty;
-      }, 0);
-      setTotalPrice(totalPrice);
-    };
-    calculateTotalPrice();
-  }, [cartItems]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    productId: string
+  ) => {
     const { value } = e.target;
     let parsedValue = parseInt(value, 10);
     if (isNaN(parsedValue) || parsedValue < 1) {
@@ -86,6 +83,15 @@ const CartPage: React.FC = () => {
       setCartItems((prevCartItems) =>
         prevCartItems.filter((item) => item.productId !== productId)
       );
+      //  Update cart count in cookies after item removal
+      const updatedCartItems = cartItems.filter(
+        (item) => item.productId !== productId
+      );
+      const count = updatedCartItems.reduce(
+        (acc, item) => acc + item.quantity,
+        0
+      );
+      cookies.set("cartItems", updatedCartItems);
     } catch (error) {
       console.error("Error removing item from cart:", error);
       setError("Error removing item from cart. Please try again later.");
@@ -98,7 +104,9 @@ const CartPage: React.FC = () => {
         userId: userId,
       });
       const updatedCartItems = cartItems.map((item) =>
-        item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.productId === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       );
       setCartItems(updatedCartItems);
     } catch (error) {
@@ -113,7 +121,9 @@ const CartPage: React.FC = () => {
         throw new Error("User not logged in.");
       }
 
-      const existingItem = cartItems.find((item) => item.productId === productId);
+      const existingItem = cartItems.find(
+        (item) => item.productId === productId
+      );
       if (!existingItem || existingItem.quantity <= 1) {
         return;
       }
@@ -123,7 +133,9 @@ const CartPage: React.FC = () => {
       });
 
       const updatedCartItems = cartItems.map((item) =>
-        item.productId === productId ? { ...item, quantity: item.quantity - 1 } : item
+        item.productId === productId
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
       );
       setCartItems(updatedCartItems);
     } catch (error) {
@@ -137,46 +149,44 @@ const CartPage: React.FC = () => {
     // Implement checkout logic here
   };
 
-  useEffect(() => {
-    // Calculate total price whenever cartItems change
-    const calculateTotalPrice = () => {
-      const totalPrice = cartItems.reduce((acc, item) => {
-        // Ensure item.discountedPrice and item.quantity are valid numbers
-        const price = item.discountedPrice || 0;
-        const qty = item.quantity || 0;
-        return acc + price * qty;
-      }, 0);
-      setTotalPrice(totalPrice);
-    };
-
-    calculateTotalPrice();
-  }, [cartItems]);
-
-
-
   return (
     <>
       <Navbar />
       <div className="px-4 py-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto bg-gray-50">
-        <h2 className="text-3xl font-bold mb-4">View Your Cart</h2>
+        <h2 className="lg:text-xl sm:text-sm md:text-md  font-bold mb-4">View Your Cart</h2>
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : cartItems.length === 0 ? (
-          <p className="text-center">Your cart is empty.</p>
+          <div className="flex flex-col items-center justify-center ">
+            <img
+              src="./emptyCart.gif "
+              alt="Empty Cart"
+              className="w-48 h-48 mb-4"
+            />
+         
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              <Link href="/home"> Go to Home Page</Link>
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white h-fit">
             <div className="flex flex-col">
-              <div className="border-2 p-2 rounded-sm  overflow-y-auto scroll-hide h-96">
+              <div
+                className={`border-2 p-2 rounded-sm ${
+                  cartItems.length > 2 ? "overflow-y-auto scroll-hide h-96" : ""
+                }`}
+              >
                 {cartItems.map((item) => (
                   <div
-                    // key={item._id}
                     key={item.productId}
                     className="border border-gray-200 rounded-lg p-4 mb-4 shadow-md"
                   >
-                    <div className="flex flex-col md:flex-row sm:flex-row">
-                      <div className="md:mr-4 mb-4 md:mb-0 w-fit">
+                    <div className="flex flex-col md:flex-row sm:flex-row ">
+                      <div className="md:mr-4 mb-4 md:mb-0 w-fit ">
                         <img
                           src={item.images}
                           alt={item.name}
@@ -202,7 +212,7 @@ const CartPage: React.FC = () => {
                           <div className="flex items-center justify-between mt-4">
                             <div className="flex items-center">
                               <button
-                                className="border border-gray-300 px-2 py-1 ml-2"
+                                className="border border-gray-300 px-2 py-1 mr-2"
                                 onClick={() =>
                                   handleDecreaseQuantity(item.productId)
                                 }
@@ -211,7 +221,7 @@ const CartPage: React.FC = () => {
                               </button>
                               <input
                                 type="number"
-                                className={`border ${inputBorderColor} focus:border-blue-600 hover:border-blue-600 px-2 py-1 w-20 text-center`}
+                                className={`border ${inputBorderColor} focus:border-blue-600 hover:border-blue-600 px-2 py-1 w-16 text-center`}
                                 value={item.quantity}
                                 onChange={(e) =>
                                   handleChange(e, item.productId)
@@ -244,6 +254,7 @@ const CartPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+
               <div className="md:col-span-1 flex justify-end mt-4">
                 <button
                   type="submit"
