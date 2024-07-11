@@ -186,7 +186,7 @@ const WishListPage: React.FC = () => {
         ) : (
           <div className="text-center py-14">
             <img
-              src="/oops-wishlist.png"
+              src="./no-wishlist.gif"
               alt="No Wishlist"
               className="mx-auto h-16 w-16"
             />

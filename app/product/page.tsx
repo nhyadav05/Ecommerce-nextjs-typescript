@@ -254,7 +254,6 @@ import Link from "next/link";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Cookies from "universal-cookie";
 import Loader from "../components/loader";
-
 interface Product {
   _id: string;
   name: string;
@@ -267,11 +266,9 @@ interface Product {
   offer: string;
   outOfStock: boolean; // Added property
 }
-
 interface PaginationData {
   totalPages: number;
 }
-
 interface ApiResponse {
   products: Product[];
   pagination: PaginationData;
@@ -387,6 +384,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
 
   return (
     <div className="container px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+      
       {products.length > 0 ? (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -395,14 +393,15 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                 className="bg-white shadow-lg overflow-hidden relative"
                 key={product._id}
               >
-                <Link href={`/product/${product._id}`}>
+      
                   <div className="p-4">
-                    <div className="relative">
+                    <div className="w-full relative h-80">
+                    <Link href={`/product/${product._id}`}>
                       <img
                        src={product.images[0] || "/no-product-found.png"}
                         alt={product.name}
                         onError={handleImageError}
-                        className={`w-full h-80 object-center bg-contain transition-transform duration-300 transform hover:scale-105 ${
+                        className={`w-full h-full object-center bg-contain transition-transform duration-300 transform hover:scale-105 ${
                           product.outOfStock ? "filter grayscale" : ""
                         }`}
                       />
@@ -411,6 +410,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                           Out of Stock
                         </div>
                       )}
+                        </Link>
                       <button
                         className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
                         onClick={(e) => {
@@ -428,6 +428,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                         />
                       </button>
                     </div>
+                    <div className="p-4">
                     <h2 className="text-xl font-semibold mb-2">
                       <Link href={`/product/${product._id}`}>
                         <p className="text-gray-700 hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis">
@@ -453,9 +454,9 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                       </div>
                     </div>
                   </div>
-                </Link>
+              
                 <button
-                  className={`mt-4 px-4 py-2 w-full font-bold rounded-md ${
+                  className={` px-4 py-2 w-full font-bold rounded-md ${
                     product.outOfStock
                       ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                       : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
@@ -466,7 +467,9 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                   {product.outOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>
               </div>
-            ))}
+              </div>
+            ))
+            }
           </div>
           <Pagination
             currentPage={currentPage}
@@ -475,9 +478,19 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
           />
         </div>
       ) : (
-        <div className="text-center font-semibold text-red-600 p-28">
-          No products found.
-        </div>
+
+        <div className="flex flex-col items-center justify-center ">
+            <img
+              src="./product-not-found.gif "
+              alt="Empty Cart"
+              className="w-60 h-60 mb-4"
+            />
+          <p className="text-center font-semibold text-red-600 p-10">
+          Products not found......
+        </p>
+           
+          </div>
+       
       )}
     </div>
   );

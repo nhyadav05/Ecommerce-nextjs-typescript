@@ -18,6 +18,7 @@ interface Product {
   offer: string;
   ratings: number;
   reviews: number;
+  outOfStock: boolean;
 }
 
 const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
@@ -46,6 +47,7 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
           offer: apiProduct.offer || "",
           ratings: apiProduct.ratings || 0,
           reviews: apiProduct.reviews || 0,
+          outOfStock: apiProduct.outOfStock,
         };
         setProduct(formattedProduct);
       })
@@ -62,11 +64,9 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
       .then(() => {
         alert("Product added to cart successfully!");
         const cartItems = cookies.get("cartItems") || [];
-        cookies.set(
-          "cartItems",
-          [...cartItems, { productId, quantity: 1 }],
-          { path: "/" }
-        );
+        cookies.set("cartItems", [...cartItems, { productId, quantity: 1 }], {
+          path: "/",
+        });
       })
       .catch((error) => {
         console.error("Error adding product to cart:", error);
@@ -87,8 +87,18 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
   };
 
   if (!product) {
-    return <div><Loader/></div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
+
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    e.currentTarget.src = "/no-product-found.png"; // Set default image path on error
+  };
 
   return (
     <>
@@ -101,13 +111,21 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {/* Product Image Section */}
-          <div className="w-full h-65">
+          <div className="w-full  relative">
             {/* Main Product Image */}
             <img
-              src={product.imageSrc}
+              src={product.imageSrc || "/no-product-found.png"}
               alt={product.name}
-              className="w-full object-contain rounded-lg shadow-md mb-4"
+              onError={handleImageError}
+              className={`w-full h-full object-contain rounded-lg shadow-md mb-4 transition-transform duration-300 transform hover:scale-105 ${
+                product.outOfStock ? "grayscale" : ""
+              }`}
             />
+            {product.outOfStock && (
+              <div className="absolute font-semibold inset-0 bg-gray-200 opacity-75 flex items-center justify-center">
+                Out of Stock
+              </div>
+            )}
             {/* Additional Images (if available) */}
             {/* <div className="flex mb-4 gap-2 overflow-x-auto">
               {product.additionalImages.map((imgSrc, index) => (
@@ -149,7 +167,6 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
                 {product.reviews} reviews)
               </p>
             </div>
-
             {/* Color Selection */}
             <div className="mb-6">
               <h2 className="text-md font-semibold text-gray-900">Color</h2>
@@ -182,40 +199,44 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
                 ))}
               </div>
             </div>
-
             {/* Size Selection */}
             <div className="mb-6">
               <h2 className="text-md font-semibold text-gray-900">
                 Size - UK/India
               </h2>
               <div className="grid grid-cols-4 gap-2 mt-2">
-                {["4", "5", "6", "7", "8", "9", "10", "11"].map((size, index) => (
-                  <label
-                    key={index}
-                    className={`group relative flex cursor-pointer items-center justify-center rounded-md border bg-white px-4 py-3 text-sm font-medium uppercase ${
-                      selectedSize === size ? "border-blue-500" : ""
-                    }`}
-                    onClick={() => handleSizeChange(size)}
-                  >
-                    <input
-                      type="radio"
-                      name="size-choice"
-                      value={size}
-                      className="sr-only"
-                    />
-                    <span>{size}</span>
-                  </label>
-                ))}
+                {["4", "5", "6", "7", "8", "9", "10", "11"].map(
+                  (size, index) => (
+                    <label
+                      key={index}
+                      className={`group relative flex cursor-pointer items-center justify-center rounded-md border bg-white px-4 py-3 text-sm font-medium uppercase ${
+                        selectedSize === size ? "border-blue-500" : ""
+                      }`}
+                      onClick={() => handleSizeChange(size)}
+                    >
+                      <input
+                        type="radio"
+                        name="size-choice"
+                        value={size}
+                        className="sr-only"
+                      />
+                      <span>{size}</span>
+                    </label>
+                  )
+                )}
               </div>
             </div>
-
             {/* Add to Bag Button */}
             <button
-              type="button"
-              className="w-full py-3 px-4 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className={`mt-4 px-4 py-2 w-full font-bold rounded-md ${
+                product.outOfStock
+                  ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
+              }`}
               onClick={() => addToBag(product.id)}
+              disabled={product.outOfStock}
             >
-              Add to Bag
+              {product.outOfStock ? "Out of Stock" : "Add to Bag"}
             </button>
           </div>
         </div>
@@ -225,6 +246,3 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
 };
 
 export default ProductDetails;
-
-
-
