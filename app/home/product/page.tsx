@@ -249,11 +249,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "@/apiConfig";
-import Pagination from "../components/pagination";
+import Pagination from "../../components/pagination";
 import Link from "next/link";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Cookies from "universal-cookie";
-import Loader from "../components/loader";
+import Loader from "../../components/loader";
 interface Product {
   _id: string;
   name: string;

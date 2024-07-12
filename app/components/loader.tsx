@@ -3,7 +3,7 @@ import React from 'react';
 const Loader = () => {
   return (
     <div>
-      <div className="flex justify-center items-center min-h-screen ">
+      <div className="flex justify-center i'k`` min-h-screen ">
           <img
               src="/loader.gif"
               alt="Loading..."

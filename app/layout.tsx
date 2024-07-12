@@ -1,14 +1,11 @@
 "use client";
-
+import { usePathname } from "next/navigation";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { usePathname } from "next/navigation";
 import Navbar from "./navbar/Navbar";
-import Categories from "./categories/categories";
-import Banner from "./banner/page";
-import AllProduct from "./product/page";
-import Signup from "./signup/page";
-import { useState } from "react";
+
+import { store } from "./redux/store";
+import { Provider } from "react-redux";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,35 +14,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get pathname for conditional layout
   const pathname = usePathname();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null
-  );
 
-  const handleCategorySelect = (categoryId: string) => {
-    console.log("Selected Category ID:", categoryId);
-    setSelectedCategoryId(categoryId);
-  };
+  // condition layout - Pathname - Array
+  const display: any = ["/", "/signup"];
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        {pathname === "/home" ? (
-          <div>
-            <Navbar />
-            <Categories
-              onCategorySelect={handleCategorySelect}
-              selectedCategoryId={selectedCategoryId}
-            />
-            <Banner />
-            <AllProduct selectedCategoryId={selectedCategoryId} />
-          </div>
-        ) : pathname === "/signup" ? (
-          <div>
-            <Signup />
-          </div>
-        ) : (
-          <div>{children}</div>
-        )}{" "}
+      <Provider store={store()}> 
+        {display.includes(pathname) ? null : <Navbar/>}
+    
+        {children}
+        </Provider>
       </body>
     </html>
   );

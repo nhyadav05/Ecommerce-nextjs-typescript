@@ -1,17 +1,22 @@
 // redux/store.ts
-"use client"
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './feature/authSlice'; // Import your reducer(s) here
+import authReducer from './features/authSlice';
+import categoriesReducer from './features/categoriesSlice';
+import cartReducer from './features/cartSlice';
+import wishListReducer from './features/wishlistSlice';
 
-const store = configureStore({
-  reducer: {
-    auth: authReducer, // Add your reducer(s) to the root reducer
-    // Add more reducers as needed
-  },
-  devTools: process.env.NODE_ENV !== 'production', // Enable Redux DevTools in development
-});
+export const store = () => {
+  return configureStore({
+    reducer: {
+      auth: authReducer,
+      categories: categoriesReducer,
+      cart: cartReducer,
+      wishlist: wishListReducer,
+    },
+  });
+};
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type AppStore = ReturnType<typeof store>;
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];
 
-export default store;
