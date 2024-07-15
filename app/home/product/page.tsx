@@ -254,42 +254,31 @@ import Link from "next/link";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Cookies from "universal-cookie";
 import Loader from "../../components/loader";
-interface Product {
-  _id: string;
-  name: string;
-  images: string[];
-  categoryId: string;
-  category: string;
-  description?: string;
-  price: number;
-  discountPrice: number;
-  offer: string;
-  outOfStock: boolean; // Added property
-}
-interface PaginationData {
-  totalPages: number;
-}
-interface ApiResponse {
-  products: Product[];
-  pagination: PaginationData;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { selectProducts,selectProductsLoading,selectProductsError ,selectCurrentPage,selectTotalPages, fetchProducts} from "@/app/redux/features/products";
+import { addToCart } from '../../redux/features/cartSlice'; 
 
 interface Props {
   selectedCategoryId: string | null;
 }
 const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [likedProducts, setLikedProducts] = useState<string[]>([]);
+  const dispatch = useDispatch();
+  const products = useSelector(selectProducts);
+  const loading = useSelector(selectProductsLoading);
+  const error = useSelector(selectProductsError);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = useSelector(selectTotalPages);
   const cookies = new Cookies();
 
 
   useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage, selectedCategoryId]);
+    dispatch(fetchProducts({ page: currentPage, categoryId: selectedCategoryId }));
+  }, [ currentPage, selectedCategoryId]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  }; 
 
   useEffect(() => {
     // Load liked products from cookies or storage if needed
@@ -297,27 +286,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
     setLikedProducts(likedProductsFromCookies);
   }, []);
 
-  const fetchProducts = (page: number) => {
-    setLoading(true);
-    setError(null);
-    let apiUrl = `${API_BASE_URL}/api/products?page=${page}&limit=12&maxPrice=150`;
-    if (selectedCategoryId) {
-      apiUrl += `&categoryId=${selectedCategoryId}`;
-    }
-    axios
-      .get<ApiResponse>(apiUrl)
-      .then((response) => {
-        setProducts(response.data.products);
-        setTotalPages(response.data.pagination.totalPages);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-        setError("Error fetching products. Please try again later.");
-        setLoading(false);
-      });
-  };
-
+  
   const addToCart = (productId: string) => {
     const userId = cookies.get("userId");
     axios
@@ -334,10 +303,6 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
         alert("Failed to add product to cart. Please try again later.");
       });
   };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  }; 
    const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
   ) => {
@@ -388,7 +353,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
       {products.length > 0 ? (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-            {products.map((product: Product) => (
+            {products.map((product) => (
               <div
                 className="bg-white shadow-lg overflow-hidden relative"
                 key={product._id}
@@ -455,17 +420,17 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                     </div>
                   </div>
               
-                <button
-                  className={` px-4 py-2 w-full font-bold rounded-md ${
-                    product.outOfStock
-                      ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                      : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
-                  }`}
-                  onClick={() => addToCart(product._id)}
-                  disabled={product.outOfStock}
-                >
-                  {product.outOfStock ? "Out of Stock" : "Add to Cart"}
-                </button>
+                  <button
+                    className={`px-4 py-2 w-full font-bold rounded-md ${
+                      product.outOfStock
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
+                    }`}
+                    onClick={() => addToCart(product._id)}
+                    disabled={product.outOfStock}
+                  >
+                    {product.outOfStock ? "Out of Stock" : "Add to Cart"}
+                  </button>
               </div>
               </div>
             ))

@@ -4,9 +4,11 @@ import API_BASE_URL from '@/apiConfig';
 import { RootState } from '../store'; // Adjust the path as per your project structure
 import Cookies from 'universal-cookie';
 
+// Interface for Cart Item
 interface CartItem {
   _id: string;
   productId: any;
+  userId: any;
   name: string;
   images: string;
   size: string;
@@ -18,6 +20,7 @@ interface CartItem {
   totalPrice: number;
 }
 
+// Interface for Cart State
 interface CartState {
   cartItems: CartItem[];
   totalPrice: number;
@@ -25,6 +28,7 @@ interface CartState {
   error: string | null;
 }
 
+// Initial State
 const initialState: CartState = {
   cartItems: [],
   totalPrice: 0,
@@ -32,10 +36,58 @@ const initialState: CartState = {
   error: null,
 };
 
+// Interface for RemoveCartItemPayload
+interface RemoveCartItemPayload {
+  productId: any;
+  userId: any;
+}
+
+// Interface for QuantityPayload
+interface QuantityPayload {
+  productId: any;
+  userId: any;
+}
+
 // Fetch userId from cookies
 const cookies = new Cookies();
 const userId = cookies.get('userId');
 
+// Assuming you have cookies imported and userId retrieved correctly
+
+// Add to Cart Thunk
+export const addToCart = createAsyncThunk(
+  'cart/addToCart',
+  async (productId: string, { getState, rejectWithValue }) => {
+    try {
+      const userId = cookies.get('userId');
+      if (!userId) {
+        throw new Error('User not logged in.');
+      }
+
+      const { cartItems } = (getState() as RootState).cart;
+      const existingItem = cartItems.find(item => item.productId === productId);
+
+      if (existingItem) {
+        throw new Error('Item already exists in cart.');
+      }
+
+      // Assuming initial quantity when adding to cart is 1
+      const response = await axios.post(`${API_BASE_URL}/api/carts/add`, {
+        userId,
+        productId,
+        quantity: 1,
+      });
+
+      return response.data; // You might want to return updated cart items or just productId
+    } catch (error) {
+      return rejectWithValue('Error adding item to cart. Please try again later.');
+    }
+  }
+);
+
+// cartSlice reducer and additional logic...
+
+// Fetch Cart Items Thunk
 export const fetchCartItems = createAsyncThunk(
   'cart/fetchCartItems',
   async (_, { rejectWithValue }) => {
@@ -52,31 +104,38 @@ export const fetchCartItems = createAsyncThunk(
   }
 );
 
+// Remove Cart Item Thunk
 export const removeCartItem = createAsyncThunk(
   'cart/removeCartItem',
-  async (payload: { productId: string; }, { rejectWithValue }) => {
+  async (payload: RemoveCartItemPayload, { rejectWithValue }) => {
     try {
+      const { productId, userId } = payload;
       if (!userId) {
         throw new Error('User not logged in.');
       }
 
-      await axios.delete(`${API_BASE_URL}/api/carts/delete/${payload.productId}`, { data: { userId } });
-      return payload.productId;
+      await axios.delete(`${API_BASE_URL}/api/carts/delete/${productId}`, { data: { userId } });
+      return productId;
     } catch (error) {
       return rejectWithValue('Error removing item from cart. Please try again later.');
     }
   }
 );
 
+// Update Cart Item Quantity Thunk
 export const updateCartItemQuantity = createAsyncThunk(
   'cart/updateCartItemQuantity',
-  async (payload: { productId: string; quantity: number; }, { rejectWithValue }) => {
+  async (payload: { productId: string; quantity: number }, { rejectWithValue }) => {
     try {
       if (!userId) {
         throw new Error('User not logged in.');
       }
 
-      await axios.put(`${API_BASE_URL}/api/carts/updateQuantity/${payload.productId}`, { userId, quantity: payload.quantity });
+      await axios.put(`${API_BASE_URL}/api/carts/updateQuantity/${payload.productId}`, {
+        userId,
+        quantity: payload.quantity,
+      });
+
       return payload;
     } catch (error) {
       return rejectWithValue('Error updating item quantity. Please try again later.');
@@ -84,16 +143,18 @@ export const updateCartItemQuantity = createAsyncThunk(
   }
 );
 
+// Increment Cart Item Quantity Thunk
 export const incrementCartItemQuantity = createAsyncThunk(
   'cart/incrementCartItemQuantity',
-  async (payload: { productId: string; }, { getState, rejectWithValue }) => {
+  async (payload: QuantityPayload, { getState, rejectWithValue }) => {
     try {
+      const { productId, userId } = payload;
       if (!userId) {
         throw new Error('User not logged in.');
       }
 
       const { cartItems } = (getState() as RootState).cart;
-      const currentItem = cartItems.find(item => item.productId === payload.productId);
+      const currentItem = cartItems.find(item => item.productId === productId);
 
       if (!currentItem) {
         throw new Error('Item not found in cart.');
@@ -101,24 +162,27 @@ export const incrementCartItemQuantity = createAsyncThunk(
 
       const newQuantity = currentItem.quantity + 1;
 
-      await axios.put(`${API_BASE_URL}/api/carts/increase/${payload.productId}`, { userId });
-      return { productId: payload.productId, quantity: newQuantity };
+      await axios.put(`${API_BASE_URL}/api/carts/increase/${productId}`, { userId });
+
+      return { productId, quantity: newQuantity };
     } catch (error) {
       return rejectWithValue('Error increasing item quantity. Please try again later.');
     }
   }
 );
 
+// Decrement Cart Item Quantity Thunk
 export const decrementCartItemQuantity = createAsyncThunk(
   'cart/decrementCartItemQuantity',
-  async (payload: { productId: string; }, { getState, rejectWithValue }) => {
+  async (payload: QuantityPayload, { getState, rejectWithValue }) => {
     try {
+      const { productId, userId } = payload;
       if (!userId) {
         throw new Error('User not logged in.');
       }
 
       const { cartItems } = (getState() as RootState).cart;
-      const currentItem = cartItems.find(item => item.productId === payload.productId);
+      const currentItem = cartItems.find(item => item.productId === productId);
 
       if (!currentItem || currentItem.quantity <= 1) {
         throw new Error('Quantity cannot be less than 1.');
@@ -126,14 +190,16 @@ export const decrementCartItemQuantity = createAsyncThunk(
 
       const newQuantity = currentItem.quantity - 1;
 
-      await axios.put(`${API_BASE_URL}/api/carts/decrease/${payload.productId}`, { userId });
-      return { productId: payload.productId, quantity: newQuantity };
+      await axios.put(`${API_BASE_URL}/api/carts/decrease/${productId}`, { userId });
+
+      return { productId, quantity: newQuantity };
     } catch (error) {
       return rejectWithValue('Error decreasing item quantity. Please try again later.');
     }
   }
 );
 
+// Slice Definition
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -219,13 +285,29 @@ const cartSlice = createSlice({
       .addCase(decrementCartItemQuantity.rejected, (state, action) => {
         state.loading = 'rejected';
         state.error = action.payload as string;
+      })
+      .addCase(addToCart.pending, (state) => {
+        state.loading = 'pending';
+        state.error = null;
+      })
+      .addCase(addToCart.fulfilled, (state, action) => {
+        state.loading = 'fulfilled';
+        // Handle the addToCart success scenario if needed
+        // For example, update state.cartItems or state.totalPrice based on action.payload
+        state.error = null;
+      })
+      .addCase(addToCart.rejected, (state, action) => {
+        state.loading = 'rejected';
+        state.error = action.payload as string;
       });
   },
 });
 
+// Selectors
 export const selectCartItems = (state: RootState) => state.cart.cartItems;
 export const selectTotalPrice = (state: RootState) => state.cart.totalPrice;
 export const selectCartLoading = (state: RootState) => state.cart.loading;
 export const selectCartError = (state: RootState) => state.cart.error;
 
+// Reducer Export
 export default cartSlice.reducer;

@@ -207,27 +207,29 @@
 
 
 
-
 "use client"
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchWishlist,
   removeFromWishlist,
-  addToWishlist,
   selectWishlist,
   selectWishlistLoading,
   selectWishlistError,
 } from "../redux/features/wishlistSlice";
+import {
+  addToCart,
+} from "../redux/features/cartSlice"; // Import addToCart and cart selectors
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import Loader from "../components/loader";
 import Cookies from "universal-cookie";
+import API_BASE_URL from "@/apiConfig";
+import axios from "axios";
 
 const WishListPage: React.FC = () => {
   const dispatch = useDispatch();
   const wishlist = useSelector(selectWishlist);
-  const loading = useSelector(selectWishlistLoading);
   const error = useSelector(selectWishlistError);
   const cookies = new Cookies();
   const userId = cookies.get("userId");
@@ -235,7 +237,6 @@ const WishListPage: React.FC = () => {
   useEffect(() => {
     if (userId) {
       dispatch(fetchWishlist());
-      // Optionally dispatch other actions like fetchCartItems if needed
     }
   }, [dispatch, userId]);
 
@@ -243,9 +244,25 @@ const WishListPage: React.FC = () => {
     dispatch(removeFromWishlist(productId));
   };
 
-  const handleAddToWishlist = (productId: string) => {
-    dispatch(addToWishlist(productId));
+  const handleAddToCart = (productId: string) => {
+
+      const userId = cookies.get("userId");
+      axios
+        .post(`${API_BASE_URL}/api/carts/add/${productId}`, { userId })
+        .then(() => {
+          alert("Product added to cart successfully!");
+          const cartItems = cookies.get("cartItems") || [];
+          cookies.set("cartItems", [...cartItems, { productId, quantity: 1 }], {
+            path: "/",
+          });
+        })
+        .catch((error) => {
+          console.error("Error adding product to cart:", error);
+          alert("Failed to add product to cart. Please try again later.");
+        });
+    
   };
+  
 
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
@@ -253,9 +270,7 @@ const WishListPage: React.FC = () => {
     e.currentTarget.src = "/no-product-found.png"; // Set default image path on error
   };
 
-  if (loading === 'pending') {
-    return <Loader />;
-  }
+
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -322,7 +337,7 @@ const WishListPage: React.FC = () => {
                         ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                         : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
                     }`}
-                    onClick={() => handleAddToWishlist(wishlistItem._id)}
+                    onClick={() => handleAddToCart(wishlistItem._id)}
                     disabled={wishlistItem.outOfStock}
                   >
                     {wishlistItem.outOfStock ? "Out of Stock" : "Add to Cart"}

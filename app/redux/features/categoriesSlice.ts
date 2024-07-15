@@ -1,10 +1,8 @@
 // redux/features/categoriesSlice.ts
-
+// redux/features/categoriesSlice.ts
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import API_BASE_URL from '@/apiConfig';
-import { RootState } from '../store'; // Adjust the path as per your project structure
-import Cookies from 'universal-cookie';
 
 interface Category {
   _id: string;
@@ -23,17 +21,15 @@ const initialState: CategoriesState = {
   loading: 'idle',
   error: null,
 };
-// Fetch userId from cookies
-const cookies = new Cookies();
-const userId = cookies.get('userId');
-export const fetchCategories = createAsyncThunk(
+
+export const fetchCategories = createAsyncThunk<Category[], void, { rejectValue: string }>(
   'categories/fetchCategories',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get<Category[]>(`${API_BASE_URL}/api/categories`);
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch categories');
+      return rejectWithValue('Failed to fetch categories');
     }
   }
 );
@@ -57,7 +53,7 @@ const categoriesSlice = createSlice({
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = 'rejected';
-        state.error = action.error.message || 'Failed to fetch categories';
+        state.error = action.payload ?? 'Failed to fetch categories';
       });
   },
 });
