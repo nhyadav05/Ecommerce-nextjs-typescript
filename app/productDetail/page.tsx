@@ -1,11 +1,10 @@
-// app/product/[productDetails]/page.tsx
+// app/productDetails/page.tsx
 
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import API_BASE_URL from "../../apiConfig"; // Assuming this is correctly defined elsewhere
-import Navbar from "../navbar/Navbar"; // Assuming the Navbar component is correctly imported
 import Cookies from "universal-cookie";
 import Loader from "../components/loader";
 
@@ -34,12 +33,12 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
   const [product, setProduct] = useState<Product | null>(null);
   const cookies = new Cookies();
   const userId = cookies.get("userId");
-  console.log(userId);
+  console.log(userId,"userId");
   // let productId = "6683efa379d94a75b5d0f252";
+  // console.log(productId,"productId");
 
   useEffect(() => {
     // const userId = cookies.get("userId");
-    // Fetch product details from API
     axios
       .get(`${API_BASE_URL}/api/products/${productId}`)
       .then((response) => {

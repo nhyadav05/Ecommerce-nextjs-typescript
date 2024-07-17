@@ -1,62 +1,39 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import {  useSelector } from "react-redux";
+import {
+  fetchCartItems,
+  removeCartItem,
+  updateCartItemQuantity,
+  incrementCartItemQuantity,
+  decrementCartItemQuantity,
+  selectCartItems,
+  selectTotalPrice,
+  selectCartError,
+} from "../redux/features/cartSlice";
+
 import { FaTrashAlt } from "react-icons/fa";
-import Navbar from "../navbar/Navbar";
-import API_BASE_URL from "@/apiConfig";
 import Cookies from "universal-cookie";
 import { AiFillSafetyCertificate } from "react-icons/ai";
 import Link from "next/link";
-import Loader from "../components/loader";
-
-interface CartItem {
-  _id: string;
-  productId: any;
-  name: string;
-  images: string;
-  size: string;
-  price: number;
-  originalPrice: number;
-  discountedPrice: number;
-  discount: string;
-  quantity: number;
-  totalPrice: number;
-}
+import { useAppDispatch } from "../redux/hook";
 
 const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [inputBorderColor, setInputBorderColor] =
-    useState<string>("border-gray-200");
+  const [inputBorderColor] = useState<string>("border-gray-200");
+  const dispatch = useAppDispatch();
+  const cartItems = useSelector(selectCartItems);
+  const totalPrice = useSelector(selectTotalPrice);
+  const error = useSelector(selectCartError);
+
   const cookies = new Cookies();
   const userId = cookies.get("userId");
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}/api/carts/products/${userId}`
-        );
-        setCartItems(response.data.carts);
-        setTotalPrice(response.data.totalPrice);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching cart items:", error);
-        setError("Error fetching cart items. Please try again later.");
-        setLoading(false);
-      }
-    };
-
     if (userId) {
-      fetchCartItems();
-    } else {
-      setLoading(false);
-      setError("User not logged in.");
+      dispatch(fetchCartItems()); // Dispatch fetchCartItems action
     }
-  }, [userId]);
+  }, [dispatch, userId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -67,82 +44,28 @@ const CartPage: React.FC = () => {
     if (isNaN(parsedValue) || parsedValue < 1) {
       parsedValue = 1;
     }
-    const updatedCartItems = cartItems.map((item) =>
-      item._id === productId ? { ...item, quantity: parsedValue } : item
-    );
-    setCartItems(updatedCartItems);
+    dispatch(updateCartItemQuantity({ productId, quantity: parsedValue })); // Dispatch updateCartItemQuantity action
   };
 
-  const handleRemove = async (productId: string) => {
-    try {
-      if (!userId) {
-        throw new Error("User not logged in.");
-      }
-      await axios.delete(`${API_BASE_URL}/api/carts/delete/${productId}`, {
-        data: { userId: userId },
-      });
-      setCartItems((prevCartItems) =>
-        prevCartItems.filter((item) => item.productId !== productId)
-      );
-      //  Update cart count in cookies after item removal
-      const updatedCartItems = cartItems.filter(
-        (item) => item.productId !== productId
-      );
-      const count = updatedCartItems.reduce(
-        (acc, item) => acc + item.quantity,
-        0
-      );
-      cookies.set("cartItems", updatedCartItems);
-    } catch (error) {
-      console.error("Error removing item from cart:", error);
-      setError("Error removing item from cart. Please try again later.");
+  const handleRemove = (productId: string) => {
+    if (!userId) {
+      console.error("User not logged in.");
+      return;
     }
+    dispatch(removeCartItem({ productId, userId })); // Dispatch removeCartItem action
   };
 
-  const handleIncreaseQuantity = async (productId: string) => {
-    try {
-      await axios.put(`${API_BASE_URL}/api/carts/increase/${productId}`, {
-        userId: userId,
-      });
-      const updatedCartItems = cartItems.map((item) =>
-        item.productId === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-      setCartItems(updatedCartItems);
-    } catch (error) {
-      console.error("Error increasing quantity:", error);
-      setError("Error increasing quantity. Please try again later.");
-    }
+  const handleIncreaseQuantity = (productId: string) => {
+    dispatch(incrementCartItemQuantity({ productId, userId })); // Dispatch incrementCartItemQuantity action
   };
 
-  const handleDecreaseQuantity = async (productId: string) => {
-    try {
-      if (!userId) {
-        throw new Error("User not logged in.");
-      }
-
-      const existingItem = cartItems.find(
-        (item) => item.productId === productId
-      );
-      if (!existingItem || existingItem.quantity <= 1) {
-        return;
-      }
-
-      await axios.put(`${API_BASE_URL}/api/carts/decrease/${productId}`, {
-        userId: userId,
-      });
-
-      const updatedCartItems = cartItems.map((item) =>
-        item.productId === productId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      );
-      setCartItems(updatedCartItems);
-    } catch (error) {
-      console.error("Error decreasing quantity:", error);
-      setError("Error decreasing quantity. Please try again later.");
+  const handleDecreaseQuantity = (productId: string) => {
+    const existingItem = cartItems.find((item) => item.productId === productId);
+    if (!existingItem || existingItem.quantity <= 1) {
+      return;
     }
+
+    dispatch(decrementCartItemQuantity({ productId, userId }));
   };
 
   const handleCheckout = () => {
@@ -152,12 +75,11 @@ const CartPage: React.FC = () => {
 
   return (
     <>
-     
       <div className="px-4 py-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto bg-gray-50">
-        <h2 className="lg:text-xl sm:text-sm md:text-md  font-bold mb-4">View Your Cart</h2>
-        {loading ? (
-    <Loader/>
-        ) : error ? (
+        <h2 className="lg:text-xl sm:text-sm md:text-md  font-bold mb-4">
+          View Your Cart
+        </h2>
+        {error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center ">
@@ -166,11 +88,11 @@ const CartPage: React.FC = () => {
               alt="Empty Cart"
               className="w-48 h-48 mb-4"
             />
-         
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              <Link href="/home"> Go to Home Page</Link>
+     <h2 className="mb-8 text-center ">Just relax, let us help you find some first-class products</h2>
+
+       
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <Link href="/home">Start Shopping</Link>
             </button>
           </div>
         ) : (
@@ -213,13 +135,19 @@ const CartPage: React.FC = () => {
                           <div className="flex items-center justify-between mt-4">
                             <div className="flex items-center">
                               <button
-                                className="border border-gray-300 px-2 py-1 mr-2"
+                                className={`border border-gray-300 px-2 py-1 mr-2 ${
+                                  item.quantity <= 1
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                                }`}
                                 onClick={() =>
                                   handleDecreaseQuantity(item.productId)
                                 }
+                                disabled={item.quantity <= 1} // Disable button if quantity is 1 or less
                               >
                                 -
                               </button>
+
                               <input
                                 type="number"
                                 className={`border ${inputBorderColor} focus:border-blue-600 hover:border-blue-600 px-2 py-1 w-16 text-center`}
@@ -314,17 +242,3 @@ const CartPage: React.FC = () => {
 };
 
 export default CartPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
