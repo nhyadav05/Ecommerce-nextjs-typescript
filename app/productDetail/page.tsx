@@ -1,10 +1,13 @@
+// app/product/[productDetails]/page.tsx
+
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import API_BASE_URL from "@/apiConfig"; // Assuming this is correctly defined elsewhere
-import Navbar from "@/app/navbar/Navbar"; // Assuming the Navbar component is correctly imported
+import API_BASE_URL from "../../apiConfig"; // Assuming this is correctly defined elsewhere
+import Navbar from "../navbar/Navbar"; // Assuming the Navbar component is correctly imported
 import Cookies from "universal-cookie";
-import Loader from "@/app/components/loader";
+import Loader from "../components/loader";
 
 interface Product {
   id: number;
@@ -21,18 +24,24 @@ interface Product {
   outOfStock: boolean;
 }
 
-const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
-  const { productDetail } = params;
+const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
+  const { productDetails } = params;
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [product, setProduct] = useState<Product | null>(null);
   const cookies = new Cookies();
+  const userId = cookies.get("userId");
+  console.log(userId);
+  // let productId = "6683efa379d94a75b5d0f252";
 
   useEffect(() => {
+    // const userId = cookies.get("userId");
     // Fetch product details from API
     axios
-      .get(`${API_BASE_URL}/api/products/${productDetail}`)
+      .get(`${API_BASE_URL}/api/products/${productId}`)
       .then((response) => {
         const apiProduct = response.data;
         const formattedProduct: Product = {
@@ -49,13 +58,14 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
           reviews: apiProduct.reviews || 0,
           outOfStock: apiProduct.outOfStock,
         };
+        console.log(response, "response");
         setProduct(formattedProduct);
       })
       .catch((error) => {
-        console.error("Error fetching product:", error);
+        console.error("Error fetching productDetails:", error);
         // Handle error state if needed
       });
-  }, [productDetail]); // Depend on productDetail to re-fetch when it changes
+  }, [productDetails]);
 
   const addToBag = (productId: number) => {
     const userId = cookies.get("userId");
@@ -102,22 +112,21 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
 
   return (
     <>
-      <Navbar />
-      <div className="px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
-        <div className="text-center md:text-left">
-          <h1 className="text-md sm:text-md md:text-xl lg:text-2xl font-bold mb-4">
+ <div className="px-4 py-4 md:py-3 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+        <div className="text-left">
+        <h1 className=" sm:text-xl md:text-3xl lg:text-4xl font-bold p-4">
             Product Details
           </h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {/* Product Image Section */}
-          <div className="w-full  relative">
+          <div className="px-4 py-10 rounded-lg shadow-[0_2px_10px_-5px] relative">
             {/* Main Product Image */}
             <img
               src={product.imageSrc || "/no-product-found.png"}
               alt={product.name}
               onError={handleImageError}
-              className={`w-full h-full object-contain rounded-lg shadow-md mb-4 transition-transform duration-300 transform hover:scale-105 ${
+              className={`mx-auto  object-cover lg:h-[500px] rounded-lg mb-4 transition-transform duration-300 transform hover:scale-105 ${
                 product.outOfStock ? "grayscale" : ""
               }`}
             />
@@ -245,4 +254,4 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
   );
 };
 
-export default ProductDetails;
+export default ProductDetailPages;
