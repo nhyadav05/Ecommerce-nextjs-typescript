@@ -1,64 +1,42 @@
+
 "use client"
-import React, { useEffect ,useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchWishlist,
   removeFromWishlist,
   selectWishlist,
-  selectWishlistLoading,
   selectWishlistError,
   selectWishlistTotalPages,
 } from "../redux/features/wishlistSlice";
-import {
-  addToCart,
-} from "../redux/features/cartSlice"; // Import addToCart and cart selectors
+import { fetchAddToCart } from "../redux/features/cartSlice";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import Loader from "../components/loader";
 import Cookies from "universal-cookie";
-import API_BASE_URL from "@/apiConfig";
-import axios from "axios";
 import Pagination from "../components/pagination";
-
 
 const WishListPage: React.FC = () => {
   const dispatch = useDispatch<any>();
   const wishlist = useSelector(selectWishlist);
   const error = useSelector(selectWishlistError);
-  const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useSelector(selectWishlistTotalPages);
+  const [currentPage, setCurrentPage] = useState(1);
   const cookies = new Cookies();
   const userId = cookies.get("userId");
 
   useEffect(() => {
     if (userId) {
-      dispatch(fetchWishlist({page: currentPage}));
+      dispatch(fetchWishlist({ page: currentPage }));
     }
-  }, [dispatch, userId,currentPage]);
+  }, [dispatch, userId, currentPage]);
 
   const handleRemoveFromWishlist = (productId: string) => {
     dispatch(removeFromWishlist(productId));
   };
 
   const handleAddToCart = (productId: string) => {
-
-      const userId = cookies.get("userId");
-      axios
-        .post(`${API_BASE_URL}/api/carts/add/${productId}`, { userId })
-        .then(() => {
-          alert("Product added to cart successfully!");
-          const cartItems = cookies.get("cartItems") || [];
-          cookies.set("cartItems", [...cartItems, { productId, quantity: 1 }], {
-            path: "/",
-          });
-        })
-        .catch((error) => {
-          console.error("Error adding product to cart:", error);
-          alert("Failed to add product to cart. Please try again later.");
-        });
-    
+    dispatch(fetchAddToCart(productId));
   };
-  
 
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
@@ -68,8 +46,7 @@ const WishListPage: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  }; 
-
+  };
 
   return (
     <>
@@ -91,7 +68,7 @@ const WishListPage: React.FC = () => {
                     <img
                       src={wishlistItem.images[0] || "/no-product-found.png"}
                       alt={wishlistItem.name}
-                      onError={handleImageError} // Handle image load error
+                      onError={handleImageError}
                       className={`w-full h-80 object-center bg-contain transition-transform duration-300 transform hover:scale-105 ${
                         wishlistItem.outOfStock ? "filter grayscale" : ""
                       }`}
@@ -140,11 +117,11 @@ const WishListPage: React.FC = () => {
                 </div>
               </div>
             ))}
-              <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         ) : (
           <div className="text-center py-14">
@@ -167,4 +144,3 @@ const WishListPage: React.FC = () => {
 };
 
 export default WishListPage;
-

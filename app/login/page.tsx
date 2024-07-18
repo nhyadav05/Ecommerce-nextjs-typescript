@@ -12,11 +12,14 @@ import Link from 'next/link';
 import { RootState, AppDispatch } from '@/app/redux/store';
 import { login } from '@/app/redux/features/authSlice';
 
+
 const Login: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { loading, error } = useSelector((state: RootState) => state.auth);
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -34,9 +37,10 @@ const Login: React.FC = () => {
     }),
     onSubmit: async (values) => {
       try {
-        await dispatch(login({ email: values.email, password: values.password }));
+      const response=  await dispatch(login({ email: values.email, password: values.password }));
         toast.success('Login successful! Redirecting to home...');
         router.push("/home"); 
+    
       } catch (error) {
         console.error("Login error:", error);
         toast.error("Login failed. Please try again.");

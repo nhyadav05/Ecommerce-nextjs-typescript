@@ -15,6 +15,9 @@ interface Product {
   discountPrice: number;
   offer: string;
   outOfStock: boolean;
+  reviews:string;
+  ratings:any;
+  
 }
 
 interface ProductsState {
@@ -50,14 +53,31 @@ export const fetchProducts = createAsyncThunk<
         limit: 12,
         maxPrice: 150,
         categoryId,
+        
       },
     });
     return {
       products: response.data.products,
       totalPages: response.data.pagination.totalPages,
     };
+  
   } catch (error) {
     return thunkAPI.rejectWithValue('Failed to fetch products');
+  }
+});
+
+
+
+export const fetchProductById = createAsyncThunk<
+  Product,
+  string,
+  { rejectValue: string }
+>('product/fetchProductById', async (productId, thunkAPI) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/products/${productId}`);
+    return response.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue('Failed to fetch product');
   }
 });
 
