@@ -15,18 +15,16 @@ import Link from "next/link";
 import Cookies from "universal-cookie";
 import Pagination from "../components/pagination";
 import Loader from "../components/loader";
-import { fetchProducts, selectProducts } from "@/app/redux/features/products";
 
 const WishListPage: React.FC = () => {
   const dispatch = useDispatch<any>();
-  const products = useSelector(selectProducts);
   const wishlist = useSelector(selectWishlist);
-  const error = useSelector(selectWishlistError);
   const loading = useSelector(selectWishlistLoading);
   const totalPages = useSelector(selectWishlistTotalPages);
   const [currentPage, setCurrentPage] = useState(1);
   const cookies = new Cookies();
   const userId = cookies.get("userId");
+  const localStorageKey = userId ? `wishlist_${userId}` : "wishlist";
 
   useEffect(() => {
     if (userId) {
@@ -35,23 +33,17 @@ const WishListPage: React.FC = () => {
   }, [dispatch, userId, currentPage]);
 
   const handleRemoveFromWishlist = (productId: string) => {
-    // Remove from local storage
     removeFromLocalStorage(productId);
-    // Dispatch action to remove from Redux store
     dispatch(removeFromWishlist(productId));
   };
 
   // Function to remove item from local storage
   const removeFromLocalStorage = (productId: string) => {
-    // Get current wishlist from local storage
-    const storedWishlist = localStorage.getItem("wishlist");
+    const storedWishlist = localStorage.getItem(localStorageKey);
     if (storedWishlist) {
-      // Parse the stored wishlist array
       const wishlist = JSON.parse(storedWishlist) as string[];
-      // Filter out the product to remove
       const updatedWishlist = wishlist.filter((id) => id !== productId);
-      // Update local storage with updated wishlist
-      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+      localStorage.setItem(localStorageKey, JSON.stringify(updatedWishlist));
     }
   };
 

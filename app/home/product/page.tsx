@@ -32,40 +32,42 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   const totalPages = useSelector(selectTotalPages);
   const [currentPage, setCurrentPage] = useState(1);
   const cookies = new Cookies();
-
+  // Define local storage key based on user ID
+  const userId = cookies.get("userId");
+  const localStorageKey = userId ? `wishlist_${userId}` : "wishlist";
 
   useEffect(() => {
     setCurrentPage(1); // Reset currentPage to 1 when selectedCategoryId changes
     if (selectedCategoryId) {
-      dispatch(fetchProducts({ page: 1, categoryId: selectedCategoryId })); // Fetch products for page 1 of selected category
+      dispatch(fetchProducts({ page: 1, categoryId: selectedCategoryId }));
     }
-    loadWishlistFromLocalStorage();
-  }, [selectedCategoryId]); // Only re-run effect when selectedCategoryId changes
+    loadWishlistFromLocalStorage(); // Load wishlist from local storage on component mount
+  }, [selectedCategoryId]);
 
   useEffect(() => {
-    dispatch(fetchProducts({ page: currentPage, categoryId: selectedCategoryId }));
-    loadWishlistFromLocalStorage();
+    dispatch(
+      fetchProducts({ page: currentPage, categoryId: selectedCategoryId })
+    );
+    loadWishlistFromLocalStorage(); // Ensure wishlist is loaded on page change
   }, [currentPage, selectedCategoryId]);
 
   const loadWishlistFromLocalStorage = () => {
-    const storedWishlist = localStorage.getItem("wishlist");
+    const storedWishlist = localStorage.getItem(localStorageKey);
     if (storedWishlist) {
       setWishList(JSON.parse(storedWishlist));
     }
   };
-
+  // Function to update local storage with wishlist
   const updateLikedProductsInCookies = (updatedWishlist: string[]) => {
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    localStorage.setItem(localStorageKey, JSON.stringify(updatedWishlist));
   };
-
-  const handleLikeToggle  = (productId: string) => {
+  const handleLikeToggle = (productId: string) => {
     if (isInWishlist(productId)) {
       removeWishlist(productId);
     } else {
       addToLocalWishlist(productId);
     }
   };
-
 
   const isInWishlist = (productId: string) => {
     return wishList.includes(productId);
@@ -75,20 +77,15 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
     const updatedWishlist = [...wishList, productId];
     setWishList(updatedWishlist);
     updateLikedProductsInCookies(updatedWishlist);
-    dispatch(addToWishlist(productId));
+    dispatch(addToWishlist(productId)); // Dispatch Redux action if needed
   };
 
   const removeWishlist = (productId: string) => {
     const updatedWishlist = wishList.filter((id) => id !== productId);
     setWishList(updatedWishlist);
     updateLikedProductsInCookies(updatedWishlist);
-    dispatch(removeFromWishlist(productId));
+    dispatch(removeFromWishlist(productId)); // Dispatch Redux action if needed
   };
-
-  useEffect(() => {
-    const likedProductsFromCookies = cookies.get("likedProducts") || [];
-    setWishList(likedProductsFromCookies);
-  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -108,14 +105,14 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
     return <Loader />;
   }
 
-    // Show error if any
-    if (error) {
-      return (
-        <div className="container mx-auto text-center py-8">
-          <p className="text-red-600">{error}</p>
-        </div>
-      );
-    }
+  // Show error if any
+  if (error) {
+    return (
+      <div className="container mx-auto text-center py-8">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
