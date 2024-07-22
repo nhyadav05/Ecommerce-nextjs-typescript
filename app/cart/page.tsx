@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   fetchCartItems,
   removeCartItem,
@@ -79,18 +79,17 @@ const CartPage: React.FC = () => {
         <h2 className="lg:text-xl sm:text-sm md:text-md  font-bold mb-4">
           View Your Cart
         </h2>
-        {error ? (
-          <p className="text-center text-red-500">{error}</p>
-        ) : cartItems.length === 0 ? (
+        {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center ">
             <img
               src="./emptyCart.gif "
               alt="Empty Cart"
               className="w-48 h-48 mb-4"
             />
-     <h2 className="mb-8 text-center ">Just relax, let us help you find some first-class products</h2>
+            <h2 className="mb-8 text-center ">
+              Just relax, let us help you find some first-class products
+            </h2>
 
-       
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               <Link href="/home">Start Shopping</Link>
             </button>
@@ -187,14 +186,13 @@ const CartPage: React.FC = () => {
               <div className="md:col-span-1 flex justify-end mt-4">
                 <button
                   type="submit"
-                  className="mt-0 flex w-full items-center justify-center rounded-md border border-transparent bg-[#fb641b] px-8 py-3 text-base font-medium text-white hover:bg-[#e55b19] focus:outline-none focus:ring-2 focus:ring-[#e56d33] focus:ring-offset-2"
+                  className="mt-0 flex w-full items-center justify-center rounded-md border border-transparent bg-[#fb641b] px-8 py-3 text-base font-medium text-white hover:bg-[#e55b19] focus:outline-none focus:ring-2 focus:ring-[#fc0362] focus:ring-offset-2"
                   onClick={handleCheckout}
                 >
                   <span>Place Order</span>{" "}
                 </button>
               </div>
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-md">
                 <h3 className="text-xl font-bold mb-4">Price Details</h3>

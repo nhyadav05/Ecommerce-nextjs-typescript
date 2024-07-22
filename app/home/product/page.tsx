@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Pagination from "../../components/pagination";
+import Pagination from "../../components/pagination"; // Adjust path as per your project structure
 import Link from "next/link";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import Cookies from "universal-cookie";
-import Loader from "../../components/loader";
+import Loader from "../../components/loader"; // Adjust path as per your project structure
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectProducts,
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
-  const [likedProducts, setLikedProducts] = useState<string[]>([]);
+  const [wishList, setWishList] = useState<string[]>([]);
   const dispatch = useDispatch<any>();
   const products = useSelector(selectProducts);
   const loading = useSelector(selectProductsLoading);
@@ -35,16 +35,59 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
 
 
   useEffect(() => {
-   // Start local loading state
-    dispatch(
-      fetchProducts({ page: currentPage, categoryId: selectedCategoryId })
-    ); // Set loadingLocal false after data fetch
-  }, [currentPage, selectedCategoryId]);
+    setCurrentPage(1); // Reset currentPage to 1 when selectedCategoryId changes
+    if (selectedCategoryId) {
+      dispatch(fetchProducts({ page: 1, categoryId: selectedCategoryId })); // Fetch products for page 1 of selected category
+    }
+    loadWishlistFromLocalStorage();
+  }, [selectedCategoryId]); // Only re-run effect when selectedCategoryId changes
 
   useEffect(() => {
-    // Load liked products from cookies or storage if needed
+    dispatch(fetchProducts({ page: currentPage, categoryId: selectedCategoryId }));
+    loadWishlistFromLocalStorage();
+  }, [currentPage, selectedCategoryId]);
+
+  const loadWishlistFromLocalStorage = () => {
+    const storedWishlist = localStorage.getItem("wishlist");
+    if (storedWishlist) {
+      setWishList(JSON.parse(storedWishlist));
+    }
+  };
+
+  const updateLikedProductsInCookies = (updatedWishlist: string[]) => {
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+  };
+
+  const handleLikeToggle  = (productId: string) => {
+    if (isInWishlist(productId)) {
+      removeWishlist(productId);
+    } else {
+      addToLocalWishlist(productId);
+    }
+  };
+
+
+  const isInWishlist = (productId: string) => {
+    return wishList.includes(productId);
+  };
+
+  const addToLocalWishlist = (productId: string) => {
+    const updatedWishlist = [...wishList, productId];
+    setWishList(updatedWishlist);
+    updateLikedProductsInCookies(updatedWishlist);
+    dispatch(addToWishlist(productId));
+  };
+
+  const removeWishlist = (productId: string) => {
+    const updatedWishlist = wishList.filter((id) => id !== productId);
+    setWishList(updatedWishlist);
+    updateLikedProductsInCookies(updatedWishlist);
+    dispatch(removeFromWishlist(productId));
+  };
+
+  useEffect(() => {
     const likedProductsFromCookies = cookies.get("likedProducts") || [];
-    setLikedProducts(likedProductsFromCookies);
+    setWishList(likedProductsFromCookies);
   }, []);
 
   const handlePageChange = (page: number) => {
@@ -55,33 +98,25 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
     dispatch(fetchAddToCart(productId));
   };
 
-
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
   ) => {
-    e.currentTarget.src = "/no-product-found.png"; // Set default image path on error
+    e.currentTarget.src = "/no-product-found.png";
   };
 
-  const handleLikeToggle = (productId: string) => {
-    if (likedProducts.includes(productId)) {
-      dispatch(removeFromWishlist(productId));
-    } else {
-      dispatch(addToWishlist(productId));
-    }
-  };
-  // Show loader while loadingLocal or cartLoading
-  if (loading==="pending" ) {
+  if (loading === "pending") {
     return <Loader />;
   }
 
-  // Show error if any
-  if (error) {
-    return (
-      <div className="container mx-auto text-center py-8">
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
-  }
+    // Show error if any
+    if (error) {
+      return (
+        <div className="container mx-auto text-center py-8">
+          <p className="text-red-600">{error}</p>
+        </div>
+      );
+    }
+
   return (
     <div className="container px-4 py-8 md:py-3 mt-8 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
       {products.length > 0 ? (
@@ -119,8 +154,8 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                     >
                       <HeartSolidIcon
                         className={`h-6 w-6 ${
-                          likedProducts.includes(product._id)
-                            ? "text-red-600" // Liked color
+                          wishList.includes(product._id)
+                            ? "text-[#fc0362]" // Liked color
                             : "text-gray-400" // Default color
                         }`}
                       />

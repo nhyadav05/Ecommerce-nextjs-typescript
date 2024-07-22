@@ -8,10 +8,15 @@ import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import API_BASE_URL from "@/apiConfig";
-
+import { signup } from "../redux/features/authSlice";
+import { RootState, AppDispatch } from "@/app/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import Cookies from 'universal-cookie'; 
 
 const Signup: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch<any>();
   const router = useRouter();
+  const cookies = new Cookies();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/;
@@ -51,13 +56,14 @@ const Signup: React.FC = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const response = await axios.post(`${API_BASE_URL}/api/auth/sign-up`, values);
-        console.log("Signup success:", response.data);
-        toast.success("Signup successful! Redirecting to home...");
-        localStorage.setItem("isLoggedIn", "true");
-        setTimeout(() => {
-          router.push("/home"); // Redirect to home page after successful signup
-        }, 2000); // Redirect to home page after successful signup
+        const response = await dispatch(signup(values));
+        // Check if login was successful
+        if (response.payload) {
+          toast.success('Signup successful! Redirecting to home...');
+          router.push('/home');
+        } else {
+          toast.error('Login failed. Please try again.');
+        }
       } catch (error: any) { // Explicitly declare error as any
         console.error("Signup error:", error);
         if (error.response && error.response.status === 409) {
@@ -202,9 +208,3 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
-
-
-
-
-
-

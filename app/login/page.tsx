@@ -1,4 +1,3 @@
-
 "use client"
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,20 +11,21 @@ import Link from 'next/link';
 import { RootState, AppDispatch } from '@/app/redux/store';
 import { login } from '@/app/redux/features/authSlice';
 
-
 const Login: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { loading, error } = useSelector((state: RootState) => state.auth);
 
-
-
+  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Regular expression for email validation
   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/;
+
+  // Form validation using yup schema
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -37,16 +37,24 @@ const Login: React.FC = () => {
     }),
     onSubmit: async (values) => {
       try {
-      const response=  await dispatch(login({ email: values.email, password: values.password }));
-        toast.success('Login successful! Redirecting to home...');
-        router.push("/home"); 
-    
-      } catch (error) {
-        console.error("Login error:", error);
-        toast.error("Login failed. Please try again.");
+        const response = await dispatch(login({ email: values.email, password: values.password }));
+        
+        // Check if login was successful
+        if (response.payload) {
+          toast.success('Login successful! Redirecting to home...');
+          router.push('/home');
+        } else {
+          toast.error('Login failed. Please try again.');
+        }
+      } catch (error:any) {
+        toast.error(error.message, {
+          position: "top-right",
+        });
       }
     },
   });
+
+
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -105,7 +113,7 @@ const Login: React.FC = () => {
                   className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-700 focus:outline-none"
                   onClick={togglePasswordVisibility}
                 >
-                  {showPassword ? <FaEyeSlash className="h-5 w-5 text-gray-700" /> : <FaEye className="h-5 w-5 text-gray-700" />}
+                {showPassword ? <FaEyeSlash className="h-5 w-5 text-gray-700" /> : <FaEye className="h-5 w-5 text-gray-700" />}
                 </button>
               </div>
               {formik.touched.password && formik.errors.password && (

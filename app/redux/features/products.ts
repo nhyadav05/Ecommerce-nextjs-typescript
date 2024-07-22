@@ -38,7 +38,7 @@ const initialState: ProductsState = {
 
 // Fetch userId from cookies
 const cookies = new Cookies();
-const userId = cookies.get('userId');
+
 
 // Define your async thunk to fetch products with pagination
 export const fetchProducts = createAsyncThunk<
@@ -47,6 +47,7 @@ export const fetchProducts = createAsyncThunk<
   { rejectValue: string }
 >('products/fetchProducts', async ({ page, categoryId }, thunkAPI) => {
   try {
+    
     const response = await axios.get(`${API_BASE_URL}/api/products`, {
       params: {
         page,

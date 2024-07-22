@@ -3,7 +3,6 @@ import axios from "axios";
 import API_BASE_URL from "@/apiConfig";
 import { RootState } from "../store"; // Adjust the path as per your project structure
 import Cookies from "universal-cookie";
-import { fetchWishlist } from './wishlistSlice';
 
 // Interface for Cart Item
 interface CartItem {
@@ -75,12 +74,10 @@ export const fetchAddToCart = createAsyncThunk(
 // Fetch Cart Items Thunk
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
-  async (_, { rejectWithValue }) => {
+  async (_id, { rejectWithValue }) => {
     try {
-      if (!userId) {
-        throw new Error("User not logged in.");
-      }
-
+   
+      const userId = cookies.get("userId"); // Fetch userId from cookies
       const response = await axios.get(
         `${API_BASE_URL}/api/carts/products/${userId}`
       );
@@ -99,9 +96,7 @@ export const removeCartItem = createAsyncThunk(
   async (payload: RemoveCartItemPayload, { rejectWithValue }) => {
     try {
       const { productId, userId } = payload;
-      if (!userId) {
-        throw new Error("User not logged in.");
-      }
+      
 
       await axios.delete(`${API_BASE_URL}/api/carts/delete/${productId}`, {
         data: { userId },
@@ -123,9 +118,7 @@ export const updateCartItemQuantity = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      if (!userId) {
-        throw new Error("User not logged in.");
-      }
+      const userId = cookies.get("userId");
 
       await axios.put(
         `${API_BASE_URL}/api/carts/updateQuantity/${payload.productId}`,

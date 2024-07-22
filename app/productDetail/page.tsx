@@ -5,15 +5,17 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import API_BASE_URL from "../../apiConfig"; // Assuming this is correctly defined elsewhere
-import Cookies from "universal-cookie";
 import Loader from "../components/loader";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAddToCart } from "../redux/features/cartSlice";
+import { fetchProductById } from "../redux/features/products";
 
 interface Product {
-  id: number;
+  _id: any;
   name: string;
   category: string;
   title: string;
-  imageSrc: string;
+  images: string;
   description: string;
   price: number;
   discountPrice: number;
@@ -23,6 +25,16 @@ interface Product {
   outOfStock: boolean;
 }
 
+// Static additional images (assuming these are defined locally)
+const additionalImages = [
+  "/product/shoetopia-green.webp",
+  "/product/tokyo-talkies-tan.webp",
+  "/product/strawberry-rabbit.webp",
+  "/product/window-curtain.webp",
+  "/product/budhhamonk.webp",
+  "/jewellry/braclet.webp",
+];
+
 const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
@@ -31,57 +43,27 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [product, setProduct] = useState<Product | null>(null);
-  const cookies = new Cookies();
-  const userId = cookies.get("userId");
-  console.log(userId,"userId");
-  // let productId = "6683efa379d94a75b5d0f252";
-  // console.log(productId,"productId");
+  const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    // const userId = cookies.get("userId");
-    axios
-      .get(`${API_BASE_URL}/api/products/${productId}`)
-      .then((response) => {
-        const apiProduct = response.data;
-        const formattedProduct: Product = {
-          id: apiProduct._id,
-          name: apiProduct.name,
-          category: apiProduct.categoryId.name,
-          title: apiProduct.name,
-          imageSrc: apiProduct.images[0], // Assuming first image as main image
-          description: apiProduct.description || "Description not available",
-          price: apiProduct.price,
-          discountPrice: apiProduct.discountPrice || 0,
-          offer: apiProduct.offer || "",
-          ratings: apiProduct.ratings || 0,
-          reviews: apiProduct.reviews || 0,
-          outOfStock: apiProduct.outOfStock,
-        };
-        console.log(response, "response");
-        setProduct(formattedProduct);
-      })
-      .catch((error) => {
-        console.error("Error fetching productDetails:", error);
-        // Handle error state if needed
-      });
-  }, [productDetails]);
-
-  const addToBag = (productId: number) => {
-    const userId = cookies.get("userId");
-    axios
-      .post(`${API_BASE_URL}/api/carts/add/${productId}`, { userId })
-      .then(() => {
-        alert("Product added to cart successfully!");
-        const cartItems = cookies.get("cartItems") || [];
-        cookies.set("cartItems", [...cartItems, { productId, quantity: 1 }], {
-          path: "/",
+    if (productId) {
+      dispatch(fetchProductById(productId))
+        .unwrap()
+        .then((product: Product) => {
+          setProduct(product);
+        })
+        .catch((error: string) => {
+          console.error('Error fetching productDetails:', error);
+          // Handle error state if needed
         });
-      })
-      .catch((error) => {
-        console.error("Error adding product to cart:", error);
-        alert("Failed to add product to cart. Please try again later.");
-      });
+    }
+  }, [dispatch, productId]);
+  
+
+  const addToBag = (productId: any) => {
+    dispatch(fetchAddToCart(productId));
   };
+  
 
   const handleColorChange = (colorValue: string) => {
     setSelectedColor(colorValue);
@@ -111,9 +93,9 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
 
   return (
     <>
- <div className="px-4 py-4 md:py-3 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
+      <div className="px-4 py-4 md:py-3 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
         <div className="text-left">
-        <h1 className=" sm:text-xl md:text-3xl lg:text-4xl font-bold p-4">
+          <h1 className=" sm:text-xl md:text-3xl lg:text-4xl font-bold p-4">
             Product Details
           </h1>
         </div>
@@ -122,7 +104,7 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
           <div className="px-4 py-10 rounded-lg shadow-[0_2px_10px_-5px] relative">
             {/* Main Product Image */}
             <img
-              src={product.imageSrc || "/no-product-found.png"}
+              src={product.images[0] || "/no-product-found.png"}
               alt={product.name}
               onError={handleImageError}
               className={`mx-auto  object-cover lg:h-[500px] rounded-lg mb-4 transition-transform duration-300 transform hover:scale-105 ${
@@ -135,8 +117,8 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
               </div>
             )}
             {/* Additional Images (if available) */}
-            {/* <div className="flex mb-4 gap-2 overflow-x-auto">
-              {product.additionalImages.map((imgSrc, index) => (
+           <div className="flex mb-4 gap-2 overflow-x-auto">
+              {additionalImages.map((imgSrc, index) => (
                 <img
                   key={index}
                   src={imgSrc}
@@ -145,7 +127,7 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
                   onClick={() => handleImageClick(index)}
                 />
               ))}
-            </div> */}
+            </div> 
           </div>
 
           {/* Product Details Section */}
@@ -241,7 +223,7 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
                   ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                   : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
               }`}
-              onClick={() => addToBag(product.id)}
+              onClick={() => addToBag(product._id)} 
               disabled={product.outOfStock}
             >
               {product.outOfStock ? "Out of Stock" : "Add to Bag"}
