@@ -3,12 +3,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import axios from "axios";
-import API_BASE_URL from "../../apiConfig"; // Assuming this is correctly defined elsewhere
 import Loader from "../components/loader";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { fetchAddToCart } from "../redux/features/cartSlice";
 import { fetchProductById } from "../redux/features/products";
+import { BsStarFill } from "react-icons/bs";
 
 interface Product {
   _id: any;
@@ -25,6 +24,15 @@ interface Product {
   outOfStock: boolean;
 }
 
+const availableOffers= [
+
+  "5% Cashback on Flipkart Axis Bank Card T&C",
+
+  "Get extra 33% off (price inclusive of cashback/coupon) T&C",
+
+
+]
+
 // Static additional images (assuming these are defined locally)
 const additionalImages = [
   "/product/shoetopia-green.webp",
@@ -38,7 +46,6 @@ const additionalImages = [
 const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
-  const { productDetails } = params;
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -95,19 +102,19 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
     <>
       <div className="px-4 py-4 md:py-3 sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl mx-auto">
         <div className="text-left">
-          <h1 className=" sm:text-xl md:text-3xl lg:text-4xl font-bold p-4">
+          <h1 className=" sm:text-xl md:text-3xl lg:text-4xl font-bold p-4 mb-4">
             Product Details
           </h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {/* Product Image Section */}
-          <div className="px-4 py-10 rounded-lg shadow-[0_2px_10px_-5px] relative">
+          <div className="px-4  rounded-lg shadow-[0_2px_10px_-5px] relative ">
             {/* Main Product Image */}
             <img
               src={product.images[0] || "/no-product-found.png"}
               alt={product.name}
               onError={handleImageError}
-              className={`mx-auto  object-cover lg:h-[500px] rounded-lg mb-4 transition-transform duration-300 transform hover:scale-105 ${
+              className={`mx-auto  object-cover rounded-lg mt-6 transition-transform duration-300 transform hover:scale-105 ${
                 product.outOfStock ? "grayscale" : ""
               }`}
             />
@@ -117,13 +124,13 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
               </div>
             )}
             {/* Additional Images (if available) */}
-           <div className="flex mb-4 gap-2 overflow-x-auto">
+            <div className="flex gap-2 overflow-x-auto mt-10">
               {additionalImages.map((imgSrc, index) => (
                 <img
                   key={index}
                   src={imgSrc}
                   alt={`Product ${index + 1}`}
-                  className="w-[30%] md:w-[20%] object-cover shadow-md cursor-pointer"
+                  className="w-[30%] md:w-[20%] object-cover shadow-md mb-6 cursor-pointer"
                   onClick={() => handleImageClick(index)}
                 />
               ))}
@@ -133,14 +140,14 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
           {/* Product Details Section */}
           <div className="md:p-8">
             <i className="fa-solid fa-share"></i>
-            <h2 className="text-xl sm:text-md md:text-xl lg:text-2xl font-bold mb-4">
-              {product.title}
+            <h2 className="text-xl sm:text-md md:text-xl lg:text-2xl font-bold ">
+              {product.name}
             </h2>
-            <p className="text-gray-700 text-xl sm:text-sm md:text-md lg:text-xl mb-2">
+            {/* <p className="text-gray-700 text-xl sm:text-sm md:text-md lg:text-xl mb-2">
               {product.description}
-            </p>
+            </p> */}
             <p className="text-green-600 font-semibold mb-4">{product.offer}</p>
-            <p className="text-gray-800 font-semibold mb-4">
+            <p className="text-gray-800 font-semibold mb-4 ">
               Special Price: ₹{product.price}
             </p>
             {product.discountPrice > 0 && (
@@ -148,7 +155,7 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
                 Original Price: ₹{product.discountPrice}
               </p>
             )}
-            <div className="flex items-center mb-4">
+            {/* <div className="flex items-center mb-4">
               <div className="bg-[#26a541] rounded-full h-8 w-8 flex items-center justify-center mr-2">
                 <span className="text-white font-bold">{product.ratings}</span>
               </div>
@@ -156,7 +163,42 @@ const ProductDetailPages: React.FC<{ params: any }> = ({ params }) => {
                 {product.ratings} ({product.reviews} ratings and{" "}
                 {product.reviews} reviews)
               </p>
-            </div>
+            </div> */}
+
+
+<div className="mt-6">
+      <h3 className="sr-only">Reviews</h3>
+      <div className="flex items-center mt-6 mb-6">
+        <div className="flex items-center space-x-2 ">
+        <BsStarFill className="h-5 w-5 flex-shrink-0 text-green-600" />
+          <BsStarFill className="h-5 w-5 flex-shrink-0 text-green-600" />
+          <BsStarFill className="h-5 w-5 flex-shrink-0 text-green-600" />
+          <BsStarFill className="h-5 w-5 flex-shrink-0 text-green-600" />
+          <BsStarFill className="h-5 w-5 flex-shrink-0 text-gray-200" />
+        </div>
+        <p className="sr-only">4 out of 5 stars</p>
+        <p className="ml-3 text-sm font-medium hover:text-gray-500 text-gray-600">
+          117 reviews & rating
+        </p>
+      </div>
+    </div>
+
+
+       {/* Available Offers */}
+       <div className="mb-4">
+          <h3 className="text-lg font-semibold mb-2">Available Offers</h3>
+          <ul className="list-disc list-inside text-gray-600">
+            {availableOffers.map((offer, index) => (
+              <li key={index}>
+                <span className="font-bold text-black-500 text-[0.875rem]">
+                  Bank Offer{" "}
+                </span>{" "}
+                <span className="text-[0.785rem]">{offer}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
             {/* Color Selection */}
             <div className="mb-6">
               <h2 className="text-md font-semibold text-gray-900">Color</h2>

@@ -186,6 +186,7 @@ const fetchGetCart=()=>{
   dispatch(fetchCartItems())
 }
 
+
   const handleLogout = () => {
     cookies.remove("loggedin");
     router.push("/");
@@ -206,7 +207,7 @@ const fetchGetCart=()=>{
             <PiTruck className="h-10 w-10 text-slate-200 rounded-full hover:text-slate-400 focus:outline-none transition duration-150 ease-in-out" />
           </Link>
           <Link href="/home">
-            <h1 className="text-white text-sm sm:text-xl md:text-2xl lg:text-3xl font-semibold ml-2 cursor-pointer">
+            <h1 className="text-white text-md sm:text-xl md:text-2xl lg:text-3xl font-semibold ml-2 cursor-pointer">
               Apna Store
             </h1>
           </Link>
@@ -217,20 +218,20 @@ const fetchGetCart=()=>{
         <SearchInput onSearch={handleSearch} />
       </div>
         {/* Icons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-8">
           <div className="p-0.5 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none">
             <Link href="/wishlist">
-              <HeartSolidIcon className="h-5 w-5 text-red-500" />
+              <HeartSolidIcon className="h-6 w-6 text-red-500" />
             </Link>
           </div>
 
           <FaUserCircle
-            className="text-white text-2xl cursor-pointer"
+            className="text-white text-3xl cursor-pointer"
             onClick={handleLogout}
           />
           <div className="relative">
             <Link href="/cart">
-              <FiShoppingCart className="text-white text-2xl cursor-pointer" />
+              <FiShoppingCart className="text-white text-3xl cursor-pointer" />
               {cartCount > 0 && (
                 <button className="absolute top-[-0.75rem] right-[-0.75rem] rounded-full w-6 h-6 bg-red-600 hover:bg-red-500 focus:bg-red-500 focus:outline-none">
                   <span className="text-xs font-bold text-white">

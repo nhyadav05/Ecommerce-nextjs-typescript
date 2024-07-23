@@ -89,12 +89,12 @@ const WishListPage: React.FC = () => {
                       wishlistItem.outOfStock ? "filter grayscale" : ""
                     }`}
                   />
-                </Link>
+               
                 {wishlistItem.outOfStock && (
                   <div className="absolute inset-0 bg-gray-200 opacity-75 flex items-center justify-center">
                     Out of Stock
                   </div>
-                )}
+                )} </Link>
                 <button
                   className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
                   onClick={() => handleRemoveFromWishlist(wishlistItem._id)}

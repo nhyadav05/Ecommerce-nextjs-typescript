@@ -123,6 +123,26 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
     }
   };
 
+  // const handleSearch = async () => {
+  //   if (search.trim() !== "") {
+  //     try {
+  //       const response = await fetch(`/api/search?term=${encodeURIComponent(search)}`);
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch data');
+  //       }
+  //       const searchData = await response.json();
+  //       // Assuming searchData is an array of products matching the search term
+  //       // Pass this data to your parent component or update state to display results
+  //       onSearch(searchData);
+  //       setSearch("");
+  //       setShowSuggestions(false);
+  //     } catch (error) {
+  //       console.error('Error fetching search results:', error);
+  //     }
+  //   }
+  // };
+  
+
   const handleSearch = () => {
     if (search.trim() !== "") {
       onSearch(search);
