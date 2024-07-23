@@ -8,10 +8,12 @@ const Page = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
+  const [key, setKey] = useState<number>(0); // Key to force re-mount
 
   const handleCategorySelect = (categoryId: string) => {
     console.log("Selected Category ID:", categoryId);
     setSelectedCategoryId(categoryId);
+    setKey((prevKey) => prevKey + 1); // Increment key to re-mount AllProduct
   };
   return (
     <div>
@@ -20,7 +22,7 @@ const Page = () => {
         selectedCategoryId={selectedCategoryId}
       />
       <Banner />
-      <AllProduct selectedCategoryId={selectedCategoryId} />
+      <AllProduct key={key} selectedCategoryId={selectedCategoryId} />
     </div>
   );
 };

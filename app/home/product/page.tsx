@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "@/apiConfig";
@@ -32,49 +33,67 @@ interface ApiResponse {
 interface Props {
   selectedCategoryId: string | null;
 }
-
 const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [likedProducts, setLikedProducts] = useState<string[]>([]);
+  const [wishList, setWishList] = useState<string[]>([]);
   const cookies = new Cookies();
+  const userId = cookies.get("userId");
+  const localStorageKey = userId ? `wishlist_${userId}` : "wishlist";
 
   useEffect(() => {
-    fetchProducts(currentPage);
+    setCurrentPage(1); // Reset currentPage to 1 when selectedCategoryId changes
+    if (selectedCategoryId) {
+      fetchProducts({ page: 1, categoryId: selectedCategoryId });
+    }
+    loadWishlistFromLocalStorage(); // Load wishlist from local storage on component mount
+  }, [selectedCategoryId]);
+  
+  useEffect(() => {
+    fetchProducts({ page: currentPage, categoryId: selectedCategoryId });
+    loadWishlistFromLocalStorage(); // Ensure wishlist is loaded on page change
   }, [currentPage, selectedCategoryId]);
+  
 
-  useEffect(() => {
-    const likedProductsFromCookies = cookies.get("likedProducts") || [];
-    setLikedProducts(likedProductsFromCookies);
-  }, []);
+  const loadWishlistFromLocalStorage = () => {
+    const storedWishlist = localStorage.getItem(localStorageKey);
+    if (storedWishlist) {
+      setWishList(JSON.parse(storedWishlist));
+    }
+  };
 
-  const fetchProducts = (page: number) => {
+  const updateLikedProductsInCookies = (updatedWishlist: string[]) => {
+    localStorage.setItem(localStorageKey, JSON.stringify(updatedWishlist));
+  };
+
+  const isInWishlist = (productId: string) => {
+    return wishList.includes(productId);
+  };
+
+  const fetchProducts = ({ page, categoryId }: { page: number; categoryId: string | null }) => {
     setLoading(true);
     setError(null);
-
     let apiUrl = `${API_BASE_URL}/api/products?page=${page}&limit=12&maxPrice=150`;
-    if (selectedCategoryId) {
-      apiUrl += `&categoryId=${selectedCategoryId}`;
+    if (categoryId) {
+      apiUrl += `&categoryId=${categoryId}`;
     }
-
     axios
       .get<ApiResponse>(apiUrl)
       .then((response) => {
         setProducts(response.data.products);
         setTotalPages(response.data.pagination.totalPages);
-        console.log(response,"fetchProducts")
       })
-      .catch((error:any) => {
+      .catch((error) => {
         setError("Error fetching products. Please try again later.");
       })
       .finally(() => {
         setLoading(false);
       });
   };
-
+  
 
 
   const handlePageChange = (page: number) => {
@@ -82,21 +101,20 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   };
 
   const handleLikeToggle = (productId: string) => {
-    if (likedProducts.includes(productId)) {
+    if (isInWishlist(productId)) {
       axios
         .delete(`${API_BASE_URL}/api/wishlist/remove`, {
           data: { userId: cookies.get("userId"), productId },
         })
         .then(() => {
-          const updatedLikedProducts = likedProducts.filter(
-            (id) => id !== productId
-          );
-          setLikedProducts(updatedLikedProducts);
-          cookies.set("likedProducts", updatedLikedProducts);
+          const updatedWishlist = wishList.filter((id) => id !== productId);
+          setWishList(updatedWishlist);
+          updateLikedProductsInCookies(updatedWishlist);
+          cookies.set("wishList", updatedWishlist);
         })
         .catch((error) => {
           console.error("Error removing product from wishlist:", error);
-        });//${product._id}
+        });
     } else {
       axios
         .post(`${API_BASE_URL}/api/wishlist/add`, {
@@ -104,9 +122,10 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
           productId,
         })
         .then(() => {
-          const updatedLikedProducts = [...likedProducts, productId];
-          setLikedProducts(updatedLikedProducts);
-          cookies.set("likedProducts", updatedLikedProducts);
+          const updatedWishlist = [...wishList, productId];
+          setWishList(updatedWishlist);
+          updateLikedProductsInCookies(updatedWishlist);
+          cookies.set("wishList", updatedWishlist);
         })
         .catch((error) => {
           console.error("Error adding product to wishlist:", error);
@@ -180,7 +199,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                     >
                       <HeartSolidIcon
                         className={`h-6 w-6 ${
-                          likedProducts.includes(product._id)
+                          wishList.includes(product._id)
                             ? "text-red-600" // Liked color
                             : "text-gray-400" // Default color
                         }`}
