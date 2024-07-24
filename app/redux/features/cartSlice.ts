@@ -72,7 +72,7 @@ export const addToCart = createAsyncThunk(
       }
 
       // Assuming initial quantity when adding to cart is 1
-      const response = await axios.post(`${API_BASE_URL}/api/carts/add`, {
+      const response = await axios.post(`${API_BASE_URL}/carts/add`, {
         userId,
         productId,
         quantity: 1,
@@ -96,7 +96,7 @@ export const fetchCartItems = createAsyncThunk(
         throw new Error('User not logged in.');
       }
 
-      const response = await axios.get(`${API_BASE_URL}/api/carts/products/${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/carts/products/${userId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Error fetching cart items. Please try again later.');
@@ -114,7 +114,7 @@ export const removeCartItem = createAsyncThunk(
         throw new Error('User not logged in.');
       }
 
-      await axios.delete(`${API_BASE_URL}/api/carts/delete/${productId}`, { data: { userId } });
+      await axios.delete(`${API_BASE_URL}/carts/delete/${productId}`, { data: { userId } });
       return productId;
     } catch (error) {
       return rejectWithValue('Error removing item from cart. Please try again later.');
@@ -131,7 +131,7 @@ export const updateCartItemQuantity = createAsyncThunk(
         throw new Error('User not logged in.');
       }
 
-      await axios.put(`${API_BASE_URL}/api/carts/updateQuantity/${payload.productId}`, {
+      await axios.put(`${API_BASE_URL}/carts/updateQuantity/${payload.productId}`, {
         userId,
         quantity: payload.quantity,
       });
@@ -162,7 +162,7 @@ export const incrementCartItemQuantity = createAsyncThunk(
 
       const newQuantity = currentItem.quantity + 1;
 
-      await axios.put(`${API_BASE_URL}/api/carts/increase/${productId}`, { userId });
+      await axios.put(`${API_BASE_URL}/carts/increase/${productId}`, { userId });
 
       return { productId, quantity: newQuantity };
     } catch (error) {
@@ -190,7 +190,7 @@ export const decrementCartItemQuantity = createAsyncThunk(
 
       const newQuantity = currentItem.quantity - 1;
 
-      await axios.put(`${API_BASE_URL}/api/carts/decrease/${productId}`, { userId });
+      await axios.put(`${API_BASE_URL}/carts/decrease/${productId}`, { userId });
 
       return { productId, quantity: newQuantity };
     } catch (error) {

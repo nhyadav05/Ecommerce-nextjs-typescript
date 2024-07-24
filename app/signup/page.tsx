@@ -1,13 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { FaEye, FaEyeSlash, FaEnvelope, FaUser } from "react-icons/fa";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from "@/apiConfig";
+import { SignUp } from "../server/authAction";
 
 
 const Signup: React.FC = () => {
@@ -51,13 +50,13 @@ const Signup: React.FC = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const response = await axios.post(`${API_BASE_URL}/api/auth/sign-up`, values);
-        console.log("Signup success:", response.data);
+        const data = await SignUp(values);
+        console.log("Signup success:", data);
         toast.success("Signup successful! Redirecting to home...");
         localStorage.setItem("isLoggedIn", "true");
-        setTimeout(() => {
+
           router.push("/home"); // Redirect to home page after successful signup
-        }, 2000); // Redirect to home page after successful signup
+
       } catch (error: any) { // Explicitly declare error as any
         console.error("Signup error:", error);
         if (error.response && error.response.status === 409) {

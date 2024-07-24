@@ -41,7 +41,7 @@ export const fetchWishlist = createAsyncThunk<Product[], void, { rejectValue: st
         throw new Error('User not logged in.');
       }
 
-      const response = await axios.get(`${API_BASE_URL}/api/wishlist/${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/wishlist/${userId}`);
       return response.data.wishList.products;
     } catch (error:any) {
       return thunkAPI.rejectWithValue(error.message || 'Failed to fetch wishlist');
@@ -57,7 +57,7 @@ export const addToWishlist = createAsyncThunk<Product, string, { rejectValue: st
         throw new Error('User not logged in.');
       }
 
-      const response = await axios.post(`${API_BASE_URL}/api/wishlist/add`, { userId, productId });
+      const response = await axios.post(`${API_BASE_URL}/wishlist/add`, { userId, productId });
       return response.data; // Assuming response.data is the added product, adjust as per your API response structure
     } catch (error:any) {
       return thunkAPI.rejectWithValue(error.message || 'Failed to add to wishlist');
@@ -73,7 +73,7 @@ export const removeFromWishlist = createAsyncThunk<string, string, { rejectValue
         throw new Error('User not logged in.');
       }
 
-      await axios.delete(`${API_BASE_URL}/api/wishlist/remove`, { data: { userId, productId } });
+      await axios.delete(`${API_BASE_URL}/wishlist/remove`, { data: { userId, productId } });
       return productId;
     } catch (error:any) {
       return thunkAPI.rejectWithValue(error.message || 'Failed to remove from wishlist');

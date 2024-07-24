@@ -27,6 +27,7 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState<"pending" | boolean>(true); // Set initial loading state
   const cookies = new Cookies();
 
   useEffect(() => {
@@ -34,6 +35,8 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
     axios
       .get(`${API_BASE_URL}/api/products/${productDetail}`)
       .then((response) => {
+        setLoading(true); 
+
         const apiProduct = response.data;
         const formattedProduct: Product = {
           id: apiProduct._id,
@@ -49,6 +52,7 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
           reviews: apiProduct.reviews || 0,
           outOfStock: apiProduct.outOfStock,
         };
+        setLoading(false);
         setProduct(formattedProduct);
       })
       .catch((error) => {
@@ -86,7 +90,7 @@ const ProductDetails: React.FC<{ params: any }> = ({ params }) => {
     setSelectedImageIndex(index);
   };
 
-  if (!product) {
+  if (!product ) {
     return (
       <div>
         <Loader />

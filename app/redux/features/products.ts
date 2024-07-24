@@ -44,7 +44,7 @@ export const fetchProducts = createAsyncThunk<
   { rejectValue: string }
 >('products/fetchProducts', async ({ page, categoryId }, thunkAPI) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/products`, {
+    const response = await axios.get(`${API_BASE_URL}/products`, {
       params: {
         page,
         limit: 12,

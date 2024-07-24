@@ -26,7 +26,7 @@ export const fetchCategories = createAsyncThunk<Category[], void, { rejectValue:
   'categories/fetchCategories',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<Category[]>(`${API_BASE_URL}/api/categories`);
+      const response = await axios.get<Category[]>(`${API_BASE_URL}/categories`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch categories');

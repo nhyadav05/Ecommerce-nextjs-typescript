@@ -28,7 +28,7 @@ export const login = createAsyncThunk<User, { email: string, password: string }>
   'auth/login',
   async ({ email, password }, thunkAPI) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/sign-in`, { email, password });
+      const response = await axios.post(`${API_BASE_URL}/auth/sign-in`, { email, password });
       return response.data;
     } catch (error) {
       throw new Error('Failed to login');

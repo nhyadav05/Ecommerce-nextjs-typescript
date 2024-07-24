@@ -1,15 +1,16 @@
+// Login.tsx
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
-import axios from "axios";
 import * as yup from "yup";
 import { FaEye, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
-import API_BASE_URL from "@/apiConfig";
 import Cookies from "universal-cookie";
+import { SignIn } from "../server/authAction"; // Adjust import as necessary
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -42,28 +43,20 @@ const Login: React.FC = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true); // Start loading indicator
-        const response = await axios.post(
-          `${API_BASE_URL}/api/auth/sign-in`,
-          values
-        );
-        console.log(response, "Login successful");
+        const data = await SignIn(values);
+        console.log(data, "Login successful");
         cookies.set("loggedin", true);
-        // localStorage.setItem("isLoggedIn", "true");
         toast.success("Login successful! Redirecting to home...");
-          router.push("/home"); 
-          cookies.set("userId",response.data._id);
+        router.push("/home");
+        cookies.set("userId", data._id); // Assuming data has _id field
       } catch (error) {
         console.error("Login error:", error);
         toast.error("Login failed. Please try again.");
+      } finally {
+        setIsLoading(false); // Stop loading indicator regardless of success or failure
       }
     },
   });
-
-  useEffect(() => {
-    if (!formik.isSubmitting) {
-      setIsLoading(false);
-    }
-  }, [formik.isSubmitting]);
 
   return (
     <div className="h-screen relative overflow-hidden">
