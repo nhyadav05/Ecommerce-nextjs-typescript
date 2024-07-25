@@ -8,8 +8,10 @@ import Link from "next/link";
 import Loader from "../components/loader";
 import Pagination from "../components/pagination";
 import { fetchWishlist, removeFromWishlist } from "../server/wishlistAction";
-import { addProductToCart } from "../server/cartAction";
+import { addToCart } from "../server/cartAction";
 import { toast } from "react-toastify";
+
+
 
 interface Product {
   _id: string;
@@ -23,18 +25,6 @@ interface Product {
   discountPrice: number;
 }
 
-interface WishListResponse {
-  wishList: {
-    _id: string;
-    user: string;
-    __v: number;
-    products: Product[];
-  };
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-}
-
 const WishListPage: React.FC = () => {
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [loading, setLoading] = useState<"pending" | boolean>(true); // Set initial loading state
@@ -42,31 +32,31 @@ const WishListPage: React.FC = () => {
   const userId = cookies.get("userId");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [pageLimit] = useState<number>(10); // Adjust as needed
+  const [pageLimit] = useState<number>(10);  // Adjust as needed
   const localStorageKey = userId ? `wishlist_${userId}` : "wishlist";
 
   useEffect(() => {
-    fetchWishListData(); // Fetch wishlist data on component mount
+    fetchWishListData();
   }, []);
 
-  // Fetch Wish List
   const fetchWishListData = async () => {
     try {
-      setLoading(true); // Set loading state to true when fetching data
+      setLoading(true);
       const responseWishList = await fetchWishlist(userId);
       setWishlist(responseWishList.wishList.products);
       setTotalPages(responseWishList.totalPages);
       setCurrentPage(responseWishList.currentPage);
-      setLoading(false); // Set loading state to false after fetching data
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching WishList :", error);
-      setLoading(false); // Set loading state to false if there's an error
+      setLoading(false);
     }
   };
 
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchWishListData(); // Fetch data for the selected page
+    fetchWishListData();
   };
 
   const removeFromLocalStorage = (productId: string) => {
@@ -98,13 +88,13 @@ const WishListPage: React.FC = () => {
       setLoading(false); // Set loading state to false if there's an error
     }
   };
-  
+
 
   const handleAddToCartWishlist = async (productId: any) => {
     console.log("Add to cart : ", productId);
     try {
       setLoading(true); // Set loading state to true when adding to cart
-      const wishlistAddToCart = await addProductToCart(productId, userId);
+      const wishlistAddToCart = await addToCart(productId, userId);
       toast.success("Add to Cart successful.");
       console.log(wishlistAddToCart);
       setLoading(false); // Set loading state to false after adding to cart
@@ -156,12 +146,12 @@ const WishListPage: React.FC = () => {
                         Out of Stock
                       </div>
                     )}
-                     <button
-                  className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-                  onClick={() => handleRemoveFromWishlist(wishlistItem._id)}
-                >
-                  <HeartSolidIcon className="h-6 w-6              text-[#fc0362] " />
-                </button>
+                    <button
+                      className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
+                      onClick={() => handleRemoveFromWishlist(wishlistItem._id)}
+                    >
+                       <HeartSolidIcon className="h-6 w-6              text-[#fc0362] " />
+                    </button>
                   </div>
                   <div className="p-4">
                     <h2 className="text-xl font-semibold mb-2">

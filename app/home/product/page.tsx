@@ -1,14 +1,15 @@
+// app/pages/AllProduct.tsx
 "use client"
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import API_BASE_URL from "@/apiConfig";
-import Pagination from "../../components/pagination";
-import Link from "next/link";
-import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
-import Cookies from "universal-cookie";
-import Loader from "../../components/loader";
-import { addToWishlist, fetchWishlist, removeFromWishlist } from "@/app/server/wishlistAction";
-import { fetchProduct } from "@/app/server/productAction";
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
+import Cookies from 'universal-cookie';
+import Loader from '../../components/loader';
+import Pagination from '../../components/pagination';
+import { fetchProduct } from '@/app/server/productAction';
+import { addToCart } from '@/app/server/cartAction';
+import { fetchWishlist, addToWishlist, removeFromWishlist } from '@/app/server/wishlistAction';
+import { toast } from 'react-toastify';
 
 interface Product {
   _id: string;
@@ -20,34 +21,26 @@ interface Product {
   price: number;
   discountPrice: number;
   offer: string;
-  outOfStock: boolean; // Added property
-}
-
-interface PaginationData {
-  totalPages: number;
-}
-
-interface ApiResponse {
-  products: Product[];
-  pagination: PaginationData;
+  outOfStock: boolean;
 }
 
 interface Props {
   selectedCategoryId: string | null;
 }
+
 const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<"pending" | boolean>(true); // Set initial loading state
+  const [loading, setLoading] = useState<"pending" | boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [wishList, setWishList] = useState<string[]>([]);
   const cookies = new Cookies();
-  const userId = cookies.get("userId");
-  const localStorageKey = userId ? `wishlist_${userId}` : "wishlist";
+  const userId = cookies.get('userId');
+  const localStorageKey = userId ? `wishlist_${userId}` : 'wishlist';
 
   useEffect(() => {
-    fetchProducts({ page: currentPage, categoryId: selectedCategoryId });
+   fetchProducts({ page: currentPage, categoryId: selectedCategoryId });
     loadWishlistFromLocalStorage();
   }, [currentPage, selectedCategoryId]);
 
@@ -64,7 +57,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
       const data = await fetchWishlist(userId);
       setWishList(data.wishlist || []);
     } catch (error) {
-      console.error("Error fetching wishlist:", error);
+      console.error('Error fetching wishlist:', error);
     }
   };
 
@@ -84,18 +77,15 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
       setProducts(fetchedProducts);
       setTotalPages(pagination.totalPages);
     } catch (error) {
-      setError("Error fetching products. Please try again later.");
+      setError('Error fetching products. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
-
 
   const handleLikeToggle = async (productId: string) => {
     try {
@@ -111,31 +101,27 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
         updateLikedProductsInLocalStorage(updatedWishlist);
       }
     } catch (error) {
-      console.error("Error updating wishlist:", error);
+      console.error('Error updating wishlist:', error);
     }
   };
 
-  const addToCart = (productId: string) => {
-    const userId = cookies.get("userId");
-    axios
-      .post(`${API_BASE_URL}/carts/add/${productId}`, { userId })
-      .then(() => {
-        alert("Product added to cart successfully!");
-        const cartItems = cookies.get("cartItems") || [];
-        cookies.set("cartItems", [...cartItems, { productId, quantity: 1 }], {
-          path: "/",
-        });
-      })
-      .catch((error) => {
-        console.error("Error adding product to cart:", error);
-        alert("Failed to add product to cart. Please try again later.");
-      });
+  const handleAddToCart = async (productId: string) => {
+    try {
+      setLoading(true);
+      const productAddToCart = await addToCart(productId, userId);
+      toast.success('Add to Cart successful.');
+      setLoading(false);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      setLoading(false);
+      toast.error('Failed to add product to cart. Please try again later.');
+    }
   };
 
-  if (loading === "pending") {
+  if (loading === 'pending') {
     return <Loader />;
   }
-  
+
   if (error) {
     return (
       <div className="container mx-auto text-center font-semibold text-red-600 p-8">
@@ -220,7 +206,7 @@ const AllProduct: React.FC<Props> = ({ selectedCategoryId }) => {
                       ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                       : "bg-blue-600 text-white hover:bg-blue-500 focus:bg-blue-400 focus:outline-none"
                   }`}
-                  onClick={() => addToCart(product._id)}
+                  onClick={() => handleAddToCart(product._id)}
                   disabled={product.outOfStock}
                 >
                   {product.outOfStock ? "Out of Stock" : "Add to Cart"}
